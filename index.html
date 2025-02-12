@@ -1,0 +1,118 @@
+<!DOCTYPE html>
+<html lang="zh">
+  <head>
+    <meta charset="UTF-8" />
+    <title>ShadowFlip-影翻棋</title>
+    <!-- Tailwind CSS（开发环境） -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <!-- SweetAlert -->
+    <script src="https://unpkg.com/sweetalert/dist/sweetalert.min.js"></script>
+    <!-- 自定义样式 -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    <link rel="stylesheet" href="style.css">
+    <link rel="stylesheet" href="noticejs.css">
+    <script src="notice.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/marked/marked.min.js"></script>
+  </head>
+  <body class="bg-white">
+    <!-- 开始页面 -->
+    <div id="start-screen" class="h-screen flex flex-col items-center justify-center">
+      <h1 class="text-8xl font-bold mb-12">影翻棋</h1>
+      <button id="start-btn" class="px-8 py-4 text-2xl bg-green-500 text-white rounded-lg hover:bg-green-600 transition-colors">
+        开始游戏
+      </button>
+      <!-- 在开始页面添加音乐按钮 -->
+      <div class="fixed bottom-4 left-4">
+        <button id="music-btn-start" class="w-12 h-12 rounded-full bg-green-500 hover:bg-green-600 flex items-center justify-center text-white shadow-lg transition-colors">
+          <i class="fas fa-music text-xl"></i>
+        </button>
+      </div>
+    </div>
+
+    <!-- 游戏页面 -->
+    <div id="game-screen" class="fade-in hidden">
+      <div id="app" class="flex flex-col items-center p-4">
+        <!-- 标题 -->
+        <div class="mb-2 text-lg font-bold">
+          ShadowFlip-影翻棋（By 土豆）
+        </div>
+
+        <!-- 当前回合显示 -->
+        <div class="mb-16 flex items-center gap-4">
+          当前回合：
+          <span id="current-player"></span>
+          <button id="draw-button" class="ml-8 text-white px-4 py-1 rounded bg-blue-500 hover:bg-blue-600">求和</button>
+        </div>
+
+        <!-- 悔棋按钮和棋盘区域的容器 -->
+        <div class="relative">
+          <!-- 悔棋按钮 -->
+          <div class="absolute w-full flex justify-between -top-[50px]">  
+            <div class="flex gap-2 mx-4">  
+                <button id="surrender-red" class="text-white px-4 py-2 rounded bg-red-500 hover:bg-red-600">认输</button>  
+                <button id="undo-black" class="text-white px-4 py-2 rounded">红方悔棋</button>  
+            </div>  
+            <div class="flex gap-2 mx-4">  
+                <button id="surrender-black" class="text-white px-4 py-2 rounded bg-red-500 hover:bg-red-600">认输</button>  
+                <button id="undo-red" class="text-white px-4 py-2 rounded">黑方悔棋</button>  
+            </div>  
+        </div>
+
+          <!-- 棋盘区域 -->
+          <div id="chess-board" class="bg-green-200 p-2 rounded"></div>
+        </div>
+
+        <!-- 最近被吃掉的棋子 -->
+        <div class="text-sm text-gray-700 mt-2">
+          刚刚被吃掉的棋子是：
+          <span id="last-captured"></span>
+        </div>
+
+        <!-- 淘汰的棋子显示 -->
+        <div class="flex flex-col items-start mt-2 text-sm">
+          <div>
+            <span class="text-red-600">红方淘汰的棋子：</span>
+            <span id="red-eliminated"></span>
+          </div>
+          <div>
+            黑方淘汰的棋子：
+            <span id="black-eliminated"></span>
+          </div>
+        </div>
+
+        <!-- 修改游戏页面的音乐按钮 ID -->
+        <div class="fixed bottom-4 left-4">
+          <button id="music-btn-game" class="w-12 h-12 rounded-full bg-green-500 hover:bg-green-600 flex items-center justify-center text-white shadow-lg transition-colors">
+            <i class="fas fa-music text-xl"></i>
+          </button>
+        </div>
+      </div>
+    </div>
+
+    <!-- 左上角"规则"按钮 -->
+    <div class="fixed top-4 left-4">
+      <button id="rules-btn" class="w-12 h-12 rounded-full bg-blue-500 hover:bg-blue-600 flex items-center justify-center text-white shadow-lg transition-colors">
+        <i class="fas fa-book text-xl"></i>
+      </button>
+    </div>
+
+    <!-- 规则模态框 -->
+    <div id="rules-modal" class="hidden fixed inset-0 bg-black bg-opacity-50 z-50 flex items-center justify-center">
+      <div class="bg-white p-6 rounded-lg max-w-2xl w-full mx-4">
+        <div class="flex justify-between items-center mb-4">
+          <h2 class="text-xl font-bold">游戏规则</h2>
+          <button id="rules-modal-close" class="text-gray-500 hover:text-gray-700">
+            <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" />
+            </svg>
+          </button>
+        </div>
+        <div id="rules-content" class="prose max-w-none" style="max-height: 70vh; overflow-y: auto;"></div>
+      </div>
+    </div>
+
+    <!-- 引入 canvas-confetti -->
+    <script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.9.3/dist/confetti.browser.min.js"></script>
+    <script src="main.js"></script>
+  </body>
+</html>
