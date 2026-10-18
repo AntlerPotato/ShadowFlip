@@ -1,0 +1,392 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>对局 · 影翻棋 ShadowFlip</title>
+    <meta name="description" content="影翻棋对局：双人同屏，暗子一动即翻。" />
+    <meta name="theme-color" content="#F4EEE1" />
+    <link rel="icon" href="favicon.svg" type="image/svg+xml" />
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      rel="stylesheet"
+      href="https://fonts.googleapis.com/css2?family=LXGW+WenKai+TC:wght@400;700&family=Ma+Shan+Zheng&display=swap"
+    />
+    <link rel="stylesheet" href="css/base.css" />
+    <link rel="stylesheet" href="css/dialogs.css" />
+    <link rel="stylesheet" href="css/game.css" />
+  </head>
+  <body>
+    <!-- 图标 -->
+    <svg width="0" height="0" style="position: absolute" aria-hidden="true">
+      <symbol id="i-book" viewBox="0 0 24 24"><path d="M4 4.5A2.5 2.5 0 0 1 6.5 2H20v17H6.5A2.5 2.5 0 0 0 4 21.5z" /><path d="M4 19.5v-15M9 7h7M9 11h5" /></symbol>
+      <symbol id="i-home" viewBox="0 0 24 24"><path d="M3 11l9-8 9 8" /><path d="M5 10v10h14V10" /><path d="M10 20v-6h4v6" /></symbol>
+      <symbol id="i-back" viewBox="0 0 24 24"><path d="M15 6l-6 6 6 6" /></symbol>
+      <symbol id="i-undo" viewBox="0 0 24 24"><path d="M9 14L4 9l5-5" /><path d="M4 9h11a5 5 0 0 1 0 10h-3" /></symbol>
+      <symbol id="i-flag" viewBox="0 0 24 24"><path d="M5 21V4" /><path d="M5 4h11l-2 4 2 4H5" /></symbol>
+      <symbol id="i-draw" viewBox="0 0 24 24"><path d="M6 9h12M6 15h12" /></symbol>
+      <symbol id="i-replay" viewBox="0 0 24 24"><path d="M3 12a9 9 0 1 0 2.6-6.4L3 8" /><path d="M3 3v5h5" /></symbol>
+      <symbol id="i-close" viewBox="0 0 24 24"><path d="M6 6l12 12M18 6L6 18" /></symbol>
+    </svg>
+
+    <div class="game paper">
+      <svg class="game__hills" viewBox="0 0 1440 220" preserveAspectRatio="xMidYMax slice" aria-hidden="true">
+        <defs>
+          <linearGradient id="hill-fade" x1="0" y1="0" x2="0" y2="1">
+            <stop offset="0" stop-color="#1D1A17" stop-opacity="0.09" />
+            <stop offset="1" stop-color="#1D1A17" stop-opacity="0" />
+          </linearGradient>
+          <filter id="hill-blur" x="-10%" y="-10%" width="120%" height="120%"><feGaussianBlur stdDeviation="3" /></filter>
+        </defs>
+        <path d="M0 220 L0 110 C 50 90 90 60 140 70 C 190 80 220 130 290 150 C 360 170 420 196 520 220 Z" fill="url(#hill-fade)" filter="url(#hill-blur)" />
+        <path d="M1440 220 L1440 80 C 1390 70 1350 100 1300 116 C 1240 134 1200 176 1110 194 C 1040 206 990 214 920 220 Z" fill="url(#hill-fade)" filter="url(#hill-blur)" />
+        <path d="M14 104 C 52 84 92 62 140 70 C 168 75 188 96 210 118" fill="none" stroke="#1D1A17" stroke-opacity="0.3" stroke-width="2.5" stroke-linecap="round" />
+      </svg>
+
+      <header class="topbar">
+        <a class="icon-btn topbar__back" href="index.html" aria-label="返回首页">
+          <svg class="icon"><use href="#i-back" /></svg>
+        </a>
+        <a class="topbar__brand" href="index.html">
+          <span class="seal seal--framed topbar__seal" aria-hidden="true"><span class="seal__v">影翻</span></span>
+          <span class="topbar__name">影翻棋</span>
+        </a>
+
+        <div class="topbar__status">
+          <span class="topbar__moveno" id="move-no">第 1 手</span>
+          <span class="topbar__sep" aria-hidden="true"></span>
+          <span class="turn" id="turn" data-side="red">
+            <span class="turn__dot" aria-hidden="true"></span>
+            <span id="turn-text">红方行棋</span>
+          </span>
+        </div>
+
+        <div class="topbar__tools">
+          <button class="pill topbar__tool" id="rules-btn" type="button" aria-haspopup="dialog">
+            <svg class="icon"><use href="#i-book" /></svg>
+            <span class="topbar__label">规则</span>
+          </button>
+          <button class="pill topbar__tool music-toggle" id="music-btn" type="button" aria-label="背景音乐" aria-pressed="true">
+            <svg class="icon" viewBox="0 0 24 24" aria-hidden="true">
+              <path d="M9 18V5l11-2v13" />
+              <circle cx="6" cy="18" r="3" />
+              <circle cx="17" cy="16" r="3" />
+              <path class="music__slash" d="M3 3l18 18" />
+            </svg>
+            <span class="topbar__label music__on">音乐</span>
+            <span class="topbar__label music__off">静音</span>
+            <span class="music__dot" aria-hidden="true"></span>
+          </button>
+          <a class="icon-btn topbar__home" href="index.html" aria-label="返回首页">
+            <svg class="icon"><use href="#i-home" /></svg>
+          </a>
+        </div>
+      </header>
+
+      <main class="table">
+        <section class="side side--black" data-side="black" aria-labelledby="black-title">
+          <span class="side__tag" aria-hidden="true">行棋中</span>
+          <div class="pc pc-face pc-black side__general" aria-hidden="true">將</div>
+          <div class="side__id">
+            <h2 class="side__name" id="black-title">黑方</h2>
+            <p class="side__hint" data-hint>等待红方落子</p>
+            <p class="side__counts">暗 <span data-hidden>15</span> · 明 <span data-shown>1</span></p>
+          </div>
+          <div class="side__stats">
+            <div class="stat">
+              <div class="pc pc-lq pc-lq-black stat__pc" aria-hidden="true">影</div>
+              <div class="stat__body"><span class="stat__label">暗子</span><span class="stat__value" data-hidden>15</span></div>
+            </div>
+            <div class="stat">
+              <div class="pc pc-face pc-black stat__pc" aria-hidden="true">明</div>
+              <div class="stat__body"><span class="stat__label">明子</span><span class="stat__value" data-shown>1</span></div>
+            </div>
+          </div>
+          <div class="side__fallen">
+            <div class="side__fallen-head"><span>阵亡</span><span class="side__fallen-count" data-fallen-count>0 子</span></div>
+            <div class="side__fallen-list" data-fallen-list aria-hidden="true"></div>
+            <span class="sr-only" data-fallen-sr>无</span>
+          </div>
+          <div class="side__actions">
+            <button class="btn btn--outline side__btn" type="button" data-action="undo" aria-label="黑方悔棋">
+              <svg class="icon"><use href="#i-undo" /></svg><span class="side__btn-label">悔棋</span>
+            </button>
+            <button class="btn btn--outline side__btn" type="button" data-action="resign" aria-label="黑方认输">
+              <svg class="icon"><use href="#i-flag" /></svg><span class="side__btn-label">认输</span>
+            </button>
+          </div>
+          <p class="side__note" data-note></p>
+          <p class="side__status" data-status><span class="side__status-pc" data-status-pc hidden></span><span class="side__status-text" data-status-text></span></p>
+        </section>
+
+        <div class="table__center">
+          <div class="board-frame">
+            <div class="board" id="board">
+              <svg class="board__wood" aria-hidden="true">
+                <filter id="wood" x="0" y="0" width="100%" height="100%">
+                  <feTurbulence type="fractalNoise" baseFrequency="0.006 0.09" numOctaves="3" seed="11" />
+                  <feColorMatrix values="0 0 0 0 0.55  0 0 0 0 0.36  0 0 0 0 0.17  1.1 0 0 0 -0.45" />
+                </filter>
+                <rect width="100%" height="100%" filter="url(#wood)" />
+              </svg>
+              <svg class="board__grid" viewBox="0 0 8 9" preserveAspectRatio="none" aria-hidden="true">
+                <path class="board__frame-line" d="M-0.16 -0.16H8.16V9.16H-0.16Z" />
+                <path d="M0 0H8V9H0ZM0 1H8M0 2H8M0 3H8M0 4H8M0 5H8M0 6H8M0 7H8M0 8H8M1 0V4M1 5V9M2 0V4M2 5V9M3 0V4M3 5V9M4 0V4M4 5V9M5 0V4M5 5V9M6 0V4M6 5V9M7 0V4M7 5V9M3 0L5 2M5 0L3 2M3 7L5 9M5 7L3 9" />
+                <path d="M0.91 1.69V1.91H0.69M0.91 2.31V2.09H0.69M1.09 1.69V1.91H1.31M1.09 2.31V2.09H1.31M6.91 1.69V1.91H6.69M6.91 2.31V2.09H6.69M7.09 1.69V1.91H7.31M7.09 2.31V2.09H7.31M0.91 6.69V6.91H0.69M0.91 7.31V7.09H0.69M1.09 6.69V6.91H1.31M1.09 7.31V7.09H1.31M6.91 6.69V6.91H6.69M6.91 7.31V7.09H6.69M7.09 6.69V6.91H7.31M7.09 7.31V7.09H7.31M0.09 2.69V2.91H0.31M0.09 3.31V3.09H0.31M1.91 2.69V2.91H1.69M1.91 3.31V3.09H1.69M2.09 2.69V2.91H2.31M2.09 3.31V3.09H2.31M3.91 2.69V2.91H3.69M3.91 3.31V3.09H3.69M4.09 2.69V2.91H4.31M4.09 3.31V3.09H4.31M5.91 2.69V2.91H5.69M5.91 3.31V3.09H5.69M6.09 2.69V2.91H6.31M6.09 3.31V3.09H6.31M7.91 2.69V2.91H7.69M7.91 3.31V3.09H7.69M0.09 5.69V5.91H0.31M0.09 6.31V6.09H0.31M1.91 5.69V5.91H1.69M1.91 6.31V6.09H1.69M2.09 5.69V5.91H2.31M2.09 6.31V6.09H2.31M3.91 5.69V5.91H3.69M3.91 6.31V6.09H3.69M4.09 5.69V5.91H4.31M4.09 6.31V6.09H4.31M5.91 5.69V5.91H5.69M5.91 6.31V6.09H5.69M6.09 5.69V5.91H6.31M6.09 6.31V6.09H6.31M7.91 5.69V5.91H7.69M7.91 6.31V6.09H7.69" />
+              </svg>
+              <div class="board__river" aria-hidden="true"><span>楚河</span><span>汉界</span></div>
+              <div class="board__layer" id="board-marks-under" aria-hidden="true"></div>
+              <div class="board__layer" id="board-pieces" aria-hidden="true"></div>
+              <div class="board__layer" id="board-marks-over" aria-hidden="true"></div>
+              <div class="board__layer board__points" id="board-points" role="group" aria-label="棋盘，方向键移动，回车或空格落子"></div>
+            </div>
+          </div>
+
+          <div class="lastmove">
+            <div class="lastmove__info" aria-live="polite">
+              <span class="lastmove__tag">上一手</span>
+              <span class="lastmove__pc" id="last-move-piece" aria-hidden="true" hidden></span>
+              <span id="last-move-text">尚未落子 · 红方先行</span>
+            </div>
+            <button class="btn btn--soft lastmove__btn" id="draw-btn" type="button">
+              <svg class="icon"><use href="#i-draw" /></svg>求和
+            </button>
+            <button class="btn btn--primary lastmove__btn" id="again-btn" type="button" hidden>
+              <svg class="icon"><use href="#i-replay" /></svg>再来一局
+            </button>
+          </div>
+        </div>
+
+        <section class="side side--red" data-side="red" aria-labelledby="red-title">
+          <span class="side__tag" aria-hidden="true">行棋中</span>
+          <div class="pc pc-face pc-red side__general" aria-hidden="true">帥</div>
+          <div class="side__id">
+            <h2 class="side__name" id="red-title">红方</h2>
+            <p class="side__hint" data-hint>请落子</p>
+            <p class="side__counts">暗 <span data-hidden>15</span> · 明 <span data-shown>1</span></p>
+          </div>
+          <div class="side__stats">
+            <div class="stat">
+              <div class="pc pc-lq pc-lq-red stat__pc" aria-hidden="true">影</div>
+              <div class="stat__body"><span class="stat__label">暗子</span><span class="stat__value" data-hidden>15</span></div>
+            </div>
+            <div class="stat">
+              <div class="pc pc-face pc-red stat__pc" aria-hidden="true">明</div>
+              <div class="stat__body"><span class="stat__label">明子</span><span class="stat__value" data-shown>1</span></div>
+            </div>
+          </div>
+          <div class="side__fallen">
+            <div class="side__fallen-head"><span>阵亡</span><span class="side__fallen-count" data-fallen-count>0 子</span></div>
+            <div class="side__fallen-list" data-fallen-list aria-hidden="true"></div>
+            <span class="sr-only" data-fallen-sr>无</span>
+          </div>
+          <div class="side__actions">
+            <button class="btn btn--outline side__btn" type="button" data-action="undo" aria-label="红方悔棋">
+              <svg class="icon"><use href="#i-undo" /></svg><span class="side__btn-label">悔棋</span>
+            </button>
+            <button class="btn btn--cinnabar side__btn" type="button" data-action="resign" aria-label="红方认输">
+              <svg class="icon"><use href="#i-flag" /></svg><span class="side__btn-label">认输</span>
+            </button>
+          </div>
+          <p class="side__note" data-note></p>
+          <p class="side__status" data-status><span class="side__status-pc" data-status-pc hidden></span><span class="side__status-text" data-status-text></span></p>
+        </section>
+      </main>
+
+      <p class="sr-only" id="announcer" aria-live="assertive"></p>
+      <noscript><p class="game__noscript">影翻棋需要启用 JavaScript 才能对局。</p></noscript>
+    </div>
+
+    <!-- 规则卷轴 -->
+    <dialog class="modal scroll" id="rules-dialog" aria-labelledby="rules-title">
+      <div class="scroll__rod" aria-hidden="true"></div>
+      <div class="scroll__paper">
+        <div class="scroll__head">
+          <div class="scroll__titles">
+            <span class="scroll__kicker">影翻棋</span>
+            <h2 class="scroll__title" id="rules-title">游戏规则</h2>
+          </div>
+          <button class="icon-btn scroll__close" type="button" data-close aria-label="关闭规则">
+            <svg class="icon"><use href="#i-close" /></svg>
+          </button>
+        </div>
+
+        <div class="tabs" role="tablist" aria-label="规则分类">
+          <button class="tab" role="tab" id="tab-setup" aria-controls="panel-setup" aria-selected="true" type="button">开局与暗子</button>
+          <button class="tab" role="tab" id="tab-moves" aria-controls="panel-moves" aria-selected="false" type="button">行棋</button>
+          <button class="tab" role="tab" id="tab-undo" aria-controls="panel-undo" aria-selected="false" type="button">悔棋</button>
+          <button class="tab" role="tab" id="tab-end" aria-controls="panel-end" aria-selected="false" type="button">胜负</button>
+        </div>
+
+        <div class="scroll__body">
+          <div class="tabpanel" role="tabpanel" id="panel-setup" aria-labelledby="tab-setup" tabindex="0">
+            <ul class="rule-list">
+              <li class="rule-row">
+                <div class="rule-row__mark" aria-hidden="true"><div class="pc pc-face pc-red pc--sm">帥</div><div class="pc pc-face pc-black pc--sm">將</div></div>
+                <div class="rule-row__body">
+                  <h3 class="rule-row__title">暗置开局</h3>
+                  <p class="rule-row__text">帅、将明摆在九宫正中，其余三十子全部扣置为「影」。这三十子不分红黑，统一洗混后随机落位。</p>
+                </div>
+              </li>
+              <li class="rule-row">
+                <div class="rule-row__mark" aria-hidden="true"><div class="pc pc-lq pc-lq-red pc--sm">影</div><div class="pc pc-lq pc-lq-black pc--sm">影</div></div>
+                <div class="rule-row__body">
+                  <h3 class="rule-row__title">漆色定调遣</h3>
+                  <p class="rule-row__text">落在红方开局位置的是朱漆暗子，归红方调遣；落在黑方开局位置的是黑漆暗子，归黑方调遣。</p>
+                </div>
+              </li>
+              <li class="rule-row">
+                <div class="rule-row__mark" aria-hidden="true"><div class="pc pc-lq pc-lq-red pc--sm">影</div></div>
+                <div class="rule-row__body">
+                  <h3 class="rule-row__title">依位而行</h3>
+                  <p class="rule-row__text">暗子未翻时，按所在开局位置的兵种行棋：站在马位就走「日」，站在炮位就隔子打炮。仕位暗子只在己方九宫内斜走。</p>
+                </div>
+              </li>
+              <li class="rule-row">
+                <div class="rule-row__mark" aria-hidden="true"><div class="pc pc-lq pc-lq-red pc--sm">影</div><div class="pc pc-face pc-black pc--sm">砲</div></div>
+                <div class="rule-row__body">
+                  <h3 class="rule-row__title">一动即翻</h3>
+                  <p class="rule-row__text">暗子走到空位，或吃下任意一子，落定后立即翻面，露出真实兵种与阵营，此后按真身行棋。翻出来的，可能是对手的棋子。</p>
+                </div>
+              </li>
+              <li class="rule-row">
+                <div class="rule-row__mark" aria-hidden="true"><div class="pc pc-lq pc-lq-black pc--sm">影</div></div>
+                <div class="rule-row__body">
+                  <h3 class="rule-row__title">暗子可吃</h3>
+                  <p class="rule-row__text">暗子身份未明，任何一方都能吃下它，己方漆色的暗子也不例外。被吃的暗子会亮出真身，记入其真实阵营的阵亡。</p>
+                </div>
+              </li>
+            </ul>
+          </div>
+
+          <div class="tabpanel" role="tabpanel" id="panel-moves" aria-labelledby="tab-moves" tabindex="0" hidden>
+            <ul class="rule-list">
+              <li class="rule-row">
+                <div class="rule-row__mark" aria-hidden="true"><div class="pc pc-face pc-red pc--sm">帥</div><div class="pc pc-face pc-black pc--sm">將</div></div>
+                <div class="rule-row__body">
+                  <h3 class="rule-row__title">帅 · 将</h3>
+                  <p class="rule-row__text">九宫之内横竖走一步；不可与对方将帅在同一直线上无子相隔、正面相对。</p>
+                </div>
+              </li>
+              <li class="rule-row">
+                <div class="rule-row__mark" aria-hidden="true"><div class="pc pc-face pc-red pc--sm">車</div><div class="pc pc-face pc-black pc--sm">俥</div></div>
+                <div class="rule-row__body">
+                  <h3 class="rule-row__title">车</h3>
+                  <p class="rule-row__text">沿横或竖方向走，中途不许有其他棋子阻挡。</p>
+                </div>
+              </li>
+              <li class="rule-row">
+                <div class="rule-row__mark" aria-hidden="true"><div class="pc pc-face pc-red pc--sm">馬</div><div class="pc pc-face pc-black pc--sm">傌</div></div>
+                <div class="rule-row__body">
+                  <h3 class="rule-row__title">马</h3>
+                  <p class="rule-row__text">走「日」字；「马脚」被占用则无法跳过去。</p>
+                </div>
+              </li>
+              <li class="rule-row">
+                <div class="rule-row__mark" aria-hidden="true"><div class="pc pc-face pc-red pc--sm">炮</div><div class="pc pc-face pc-black pc--sm">砲</div></div>
+                <div class="rule-row__body">
+                  <h3 class="rule-row__title">炮</h3>
+                  <p class="rule-row__text">移动同车；吃子须隔一子。</p>
+                </div>
+              </li>
+              <li class="rule-row">
+                <div class="rule-row__mark" aria-hidden="true"><div class="pc pc-face pc-red pc--sm">相</div><div class="pc pc-face pc-black pc--sm">象</div></div>
+                <div class="rule-row__body">
+                  <h3 class="rule-row__title">相 · 象</h3>
+                  <p class="rule-row__text">一步「飞田」，「象眼」被堵不能飞；暗棋中可以过河。</p>
+                </div>
+              </li>
+              <li class="rule-row">
+                <div class="rule-row__mark" aria-hidden="true"><div class="pc pc-face pc-red pc--sm">仕</div><div class="pc pc-face pc-black pc--sm">士</div></div>
+                <div class="rule-row__body">
+                  <h3 class="rule-row__title">仕 · 士</h3>
+                  <p class="rule-row__text">每次斜走一格。未翻开时限于九宫，翻开后全盘可走。</p>
+                </div>
+              </li>
+              <li class="rule-row">
+                <div class="rule-row__mark" aria-hidden="true"><div class="pc pc-face pc-red pc--sm">兵</div><div class="pc pc-face pc-black pc--sm">卒</div></div>
+                <div class="rule-row__body">
+                  <h3 class="rule-row__title">兵 · 卒</h3>
+                  <p class="rule-row__text">己方阵营内只能向前一格；过了楚河汉界，可向前或左右各走一格。</p>
+                </div>
+              </li>
+            </ul>
+          </div>
+
+          <div class="tabpanel" role="tabpanel" id="panel-undo" aria-labelledby="tab-undo" tabindex="0" hidden>
+            <ul class="rule-list">
+              <li class="rule-row">
+                <div class="rule-row__mark" aria-hidden="true"><span class="rule-row__num">壹</span></div>
+                <div class="rule-row__body">
+                  <h3 class="rule-row__title">谁可悔棋</h3>
+                  <p class="rule-row__text">刚走完的一方，可在对手落子前收回这一步，随后由悔棋方重新落子。每次只能悔一步。</p>
+                </div>
+              </li>
+              <li class="rule-row">
+                <div class="rule-row__mark" aria-hidden="true"><span class="rule-row__num">贰</span></div>
+                <div class="rule-row__body">
+                  <h3 class="rule-row__title">须已翻开</h3>
+                  <p class="rule-row__text">该子与被吃之子都须已经翻开。翻子之步、吃下暗子之步，落子无悔。</p>
+                </div>
+              </li>
+              <li class="rule-row">
+                <div class="rule-row__mark" aria-hidden="true"><span class="rule-row__num">叁</span></div>
+                <div class="rule-row__body">
+                  <h3 class="rule-row__title">须已走过</h3>
+                  <p class="rule-row__text">该子此前至少走过一步；帅、将第一次挪动也不能悔。</p>
+                </div>
+              </li>
+              <li class="rule-row">
+                <div class="rule-row__mark" aria-hidden="true"><span class="rule-row__num">肆</span></div>
+                <div class="rule-row__body">
+                  <h3 class="rule-row__title">还原</h3>
+                  <p class="rule-row__text">悔棋会把这一步完全还原：棋子回到原位，被吃之子重回棋盘，双方步数一并退回。</p>
+                </div>
+              </li>
+            </ul>
+          </div>
+
+          <div class="tabpanel" role="tabpanel" id="panel-end" aria-labelledby="tab-end" tabindex="0" hidden>
+            <ul class="rule-list">
+              <li class="rule-row">
+                <div class="rule-row__mark" aria-hidden="true"><span class="rule-row__num">壹</span></div>
+                <div class="rule-row__body">
+                  <h3 class="rule-row__title">胜负</h3>
+                  <p class="rule-row__text">吃掉对方的帅或将，即告胜利。</p>
+                </div>
+              </li>
+              <li class="rule-row">
+                <div class="rule-row__mark" aria-hidden="true"><span class="rule-row__num">贰</span></div>
+                <div class="rule-row__body">
+                  <h3 class="rule-row__title">对脸将</h3>
+                  <p class="rule-row__text">两将不得在同一直线上无子相隔、正面相对；会造成对脸的走法不可走。</p>
+                </div>
+              </li>
+              <li class="rule-row">
+                <div class="rule-row__mark" aria-hidden="true"><span class="rule-row__num">叁</span></div>
+                <div class="rule-row__body">
+                  <h3 class="rule-row__title">认输</h3>
+                  <p class="rule-row__text">只能在己方回合认输，认输后对方获胜。</p>
+                </div>
+              </li>
+              <li class="rule-row">
+                <div class="rule-row__mark" aria-hidden="true"><span class="rule-row__num">肆</span></div>
+                <div class="rule-row__body">
+                  <h3 class="rule-row__title">求和</h3>
+                  <p class="rule-row__text">一方提议求和，另一方同意，本局即以和棋收场。</p>
+                </div>
+              </li>
+            </ul>
+          </div>
+        </div>
+      </div>
+      <div class="scroll__rod" aria-hidden="true"></div>
+    </dialog>
+
+    <script src="js/engine.js"></script>
+    <script src="js/audio.js"></script>
+    <script src="js/dialogs.js"></script>
+    <script src="js/game.js"></script>
+  </body>
+</html>

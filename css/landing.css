@@ -1,0 +1,1013 @@
+/* 影翻棋 · 落地页 */
+
+html {
+  scroll-behavior: smooth;
+}
+
+.page {
+  overflow-x: clip;
+}
+
+.rule-line {
+  display: inline-block;
+  flex: none;
+  width: 40px;
+  height: 1.5px;
+  background: currentColor;
+}
+
+/* ===== 页眉 ===== */
+.masthead {
+  position: relative;
+  z-index: 3;
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: 28px 24px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  flex-wrap: wrap;
+  gap: 20px;
+}
+
+.brand {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+}
+
+.brand__text {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+}
+
+.brand__name {
+  font-family: var(--font-brush);
+  font-size: 30px;
+  line-height: 1;
+}
+
+.brand__latin {
+  font-family: var(--font-latin);
+  font-size: 12px;
+  letter-spacing: 0.28em;
+  text-transform: uppercase;
+  color: var(--ink-mute);
+}
+
+.nav {
+  display: flex;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 28px;
+  font-size: 17px;
+}
+
+.nav__links {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 28px;
+}
+
+.nav__actions {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.nav .music-toggle {
+  border-width: 1.5px;
+  border-color: rgba(29, 26, 23, 0.3);
+}
+
+.nav .music-toggle .icon {
+  width: 20px;
+  height: 20px;
+}
+
+.nav__play {
+  padding: 0 22px;
+  border-radius: 4px;
+  font-size: 17px;
+  letter-spacing: 0.2em;
+}
+
+/* 主按钮（大） */
+.btn--hero {
+  gap: 12px;
+  min-height: 58px;
+  padding: 0 34px;
+  border-radius: 4px;
+  font-size: 21px;
+  letter-spacing: 0.24em;
+  box-shadow: 0 3px 0 var(--cinnabar-deep), 0 12px 24px rgba(126, 30, 18, 0.22);
+}
+
+.btn--hero .icon {
+  width: 20px;
+  height: 20px;
+  stroke-width: 2;
+}
+
+.btn--hero-alt {
+  min-height: 58px;
+  padding: 0 30px;
+  border-radius: 4px;
+  font-size: 19px;
+  letter-spacing: 0.18em;
+}
+
+/* ===== 首屏 ===== */
+.hero {
+  position: relative;
+  z-index: 2;
+  padding: 16px 24px 120px;
+}
+
+.hero__hills {
+  position: absolute;
+  left: 0;
+  bottom: 0;
+  width: 100%;
+  height: 240px;
+  pointer-events: none;
+}
+
+.hero__inner {
+  position: relative;
+  max-width: 1200px;
+  margin: 0 auto;
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 56px;
+}
+
+.hero__copy {
+  flex: 1 1 520px;
+  min-width: 0;
+  display: flex;
+  flex-direction: column;
+}
+
+.hero__kicker {
+  margin: 0;
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  font-size: 16px;
+  letter-spacing: 0.32em;
+  color: var(--cinnabar);
+}
+
+.hero__title {
+  margin: 20px 0 0;
+  font-family: var(--font-brush);
+  font-weight: 400;
+  font-size: clamp(96px, 13vw, 188px);
+  line-height: 0.95;
+  letter-spacing: 0.02em;
+}
+
+.hero__latin {
+  margin: 14px 0 0;
+  font-family: var(--font-latin);
+  font-style: italic;
+  font-size: 25px;
+  color: #4A433B;
+}
+
+.hero__lead {
+  margin: 30px 0 0;
+  max-width: 30em;
+  font-size: 19px;
+  line-height: 1.95;
+  color: var(--ink-2);
+  text-wrap: pretty;
+}
+
+.hero__actions {
+  margin-top: 40px;
+  display: flex;
+  flex-wrap: wrap;
+  gap: 16px;
+}
+
+.hero__facts {
+  margin: 40px 0 0;
+  padding: 0;
+  list-style: none;
+  display: flex;
+  flex-wrap: wrap;
+  gap: 14px 28px;
+  font-size: 16px;
+  color: var(--ink-3);
+}
+
+.hero__facts li {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.hero__facts li::before {
+  content: '';
+  width: 7px;
+  height: 7px;
+  background: var(--cinnabar);
+  transform: rotate(45deg);
+}
+
+/* 首屏插画：按 540×620 的画稿等比缩放，--u 为画稿中的 1px */
+.hero__figure {
+  --u: calc(100cqw / 540);
+  position: relative;
+  flex: 1 1 460px;
+  max-width: 540px;
+  min-width: 0;
+  margin: 0;
+  container-type: inline-size;
+}
+
+.hero__stage {
+  position: relative;
+  width: 100%;
+  aspect-ratio: 540 / 600;
+}
+
+.hero__stage > * {
+  position: absolute;
+}
+
+.hero__glow {
+  left: calc(120 * var(--u));
+  top: 0;
+  width: calc(380 * var(--u));
+  height: calc(380 * var(--u));
+  border-radius: 50%;
+  background: radial-gradient(circle, #E8DBC0 0%, #ECE1CA 52%, rgba(236, 225, 202, 0) 71%);
+}
+
+.hero__peak {
+  left: calc(-30 * var(--u));
+  top: calc(150 * var(--u));
+  width: calc(560 * var(--u));
+  height: calc(220 * var(--u));
+}
+
+.hero__board {
+  left: calc(30 * var(--u));
+  top: calc(312 * var(--u));
+  width: calc(420 * var(--u));
+  height: calc(270 * var(--u));
+  transform: rotate(-3deg);
+  border-radius: 3px;
+  background-color: #DDBD86;
+  background-image:
+    linear-gradient(rgba(74, 51, 32, 0.8) 1.5px, transparent 1.5px),
+    linear-gradient(90deg, rgba(74, 51, 32, 0.8) 1.5px, transparent 1.5px),
+    radial-gradient(ellipse at 28% 18%, rgba(255, 244, 215, 0.7), rgba(255, 244, 215, 0) 62%),
+    repeating-linear-gradient(176deg, rgba(120, 72, 30, 0.07) 0 2px, rgba(120, 72, 30, 0) 2px 11px),
+    linear-gradient(180deg, #E8CD9A, #D4AF74);
+  background-size:
+    calc(80 * var(--u)) calc(80 * var(--u)),
+    calc(80 * var(--u)) calc(80 * var(--u)),
+    auto,
+    auto,
+    auto;
+  background-position:
+    calc(50 * var(--u)) calc(34 * var(--u)),
+    calc(50 * var(--u)) calc(34 * var(--u)),
+    0 0,
+    0 0,
+    0 0;
+  box-shadow:
+    0 0 0 calc(10 * var(--u)) #7A4B23,
+    0 0 0 calc(11 * var(--u)) #5C3618,
+    0 30px 44px rgba(60, 35, 15, 0.28);
+}
+
+.hero__pc {
+  position: absolute;
+  left: calc(var(--x) * var(--u));
+  top: calc(var(--y) * var(--u));
+  width: calc(62 * var(--u));
+  height: calc(62 * var(--u));
+  font-size: calc(27 * var(--u));
+}
+
+.hero__pc--face {
+  font-size: calc(33 * var(--u));
+}
+
+/* 影子里的「砲」 */
+.hero__shadow {
+  left: calc(118 * var(--u));
+  top: calc(330 * var(--u));
+  width: calc(250 * var(--u));
+  height: calc(250 * var(--u));
+  border-radius: 50%;
+  transform: scaleY(0.4) skewX(-32deg);
+  background: radial-gradient(circle, rgba(29, 26, 23, 0.5) 0%, rgba(29, 26, 23, 0.34) 42%, rgba(29, 26, 23, 0) 70%);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-weight: 700;
+  font-size: calc(136 * var(--u));
+  color: rgba(16, 13, 10, 0.82);
+  filter: blur(0.6px);
+}
+
+.hero__strokes {
+  inset: 0;
+  width: 100%;
+  height: calc(620 * var(--u));
+  overflow: visible;
+  fill: none;
+  stroke-linecap: round;
+}
+
+.hero__lifted {
+  left: calc(98 * var(--u));
+  top: calc(128 * var(--u));
+  width: calc(184 * var(--u));
+  height: calc(184 * var(--u));
+  font-size: calc(88 * var(--u));
+  transform: rotate(-14deg);
+  box-shadow:
+    inset 0 0 0 calc(3 * var(--u)) rgba(90, 18, 8, 0.55),
+    inset 0 calc(8 * var(--u)) calc(12 * var(--u)) rgba(255, 196, 166, 0.35),
+    inset 0 calc(-10 * var(--u)) calc(16 * var(--u)) rgba(60, 10, 4, 0.35),
+    0 calc(6 * var(--u)) 0 #701A0D,
+    0 calc(12 * var(--u)) 0 #52130A;
+}
+
+.hero__lifted::before {
+  border-width: calc(3 * var(--u));
+}
+
+.hero__poem {
+  right: 0;
+  top: calc(24 * var(--u));
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: calc(18 * var(--u));
+}
+
+.hero__verse {
+  margin: 0;
+  writing-mode: vertical-rl;
+  font-family: var(--font-poem);
+  font-size: calc(42 * var(--u));
+  line-height: 1.25;
+  letter-spacing: 0.14em;
+}
+
+.hero__poem-seal {
+  width: calc(32 * var(--u));
+  height: calc(32 * var(--u));
+  font-size: calc(22 * var(--u));
+  transform: rotate(3deg);
+}
+
+.hero__caption {
+  padding-left: calc(30 * var(--u));
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  font-size: 15px;
+  line-height: 1.6;
+  color: var(--ink-3);
+}
+
+.hero__caption .rule-line {
+  width: 32px;
+  height: 1px;
+}
+
+/* ===== 通用区块 ===== */
+.section {
+  position: relative;
+  z-index: 2;
+  padding: 104px 24px 112px;
+  border-top: 1px solid var(--line);
+}
+
+.section--tinted {
+  background: rgba(214, 196, 160, 0.22);
+  border-bottom: 1px solid rgba(29, 26, 23, 0.1);
+}
+
+.section__inner {
+  max-width: 1200px;
+  margin: 0 auto;
+  display: flex;
+  flex-direction: column;
+  gap: 56px;
+}
+
+.section__head {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: flex-end;
+  justify-content: space-between;
+  gap: 24px;
+}
+
+.section__titles {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.section__kicker {
+  font-size: 15px;
+  letter-spacing: 0.4em;
+  color: var(--cinnabar);
+}
+
+.section__title {
+  margin: 0;
+  font-family: var(--font-brush);
+  font-weight: 400;
+  font-size: clamp(48px, 8vw, 68px);
+  line-height: 1.05;
+}
+
+.section__aside {
+  margin: 0;
+  max-width: 24em;
+  font-size: 18px;
+  line-height: 1.8;
+  color: var(--ink-3);
+}
+
+/* ===== 玩法三步 ===== */
+.steps {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(min(340px, 100%), 1fr));
+  gap: 28px;
+}
+
+.step {
+  padding: 32px;
+  display: flex;
+  flex-direction: column;
+  gap: 24px;
+  background: var(--paper-card);
+  border: 1px solid var(--line);
+}
+
+.step__head {
+  display: flex;
+  align-items: baseline;
+  gap: 16px;
+}
+
+.step__num {
+  font-family: var(--font-brush);
+  font-size: 52px;
+  line-height: 1;
+  color: var(--cinnabar);
+}
+
+.step__title {
+  margin: 0;
+  font-size: 26px;
+  font-weight: 700;
+}
+
+.step__text {
+  margin: 0;
+  font-size: 17px;
+  line-height: 1.85;
+  color: var(--ink-2);
+  text-wrap: pretty;
+}
+
+.step__art {
+  height: 176px;
+  border-radius: 2px;
+  background: linear-gradient(180deg, #E6CA96, #D8B47A);
+  box-shadow: inset 0 0 0 1px rgba(92, 54, 24, 0.25);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 12px;
+}
+
+.step__art--row {
+  flex-direction: row;
+  gap: 28px;
+}
+
+/* 壹：两排扣置的棋子 */
+.mini-board {
+  container-type: inline-size;
+}
+
+.mini-row {
+  display: flex;
+  gap: 4px;
+}
+
+.mini-row .pc {
+  --s: min(29px, calc((100cqw - 56px) / 9));
+  --ring: 1px;
+  --d1: 1px;
+  --d2: 2px;
+  --d3: 4px;
+  --blur: 5px;
+  width: var(--s);
+  height: var(--s);
+  font-size: calc(var(--s) * 0.45);
+}
+
+.mini-row .pc-face {
+  font-size: calc(var(--s) * 0.55);
+}
+
+.mini-board__note {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  font-size: 13px;
+  letter-spacing: 0.12em;
+  color: #5C3A1C;
+}
+
+.mini-board__note span {
+  width: 34px;
+  border-top: 1px dashed rgba(92, 58, 28, 0.6);
+}
+
+/* 贰：马位的八个落点 */
+.knight-grid {
+  position: relative;
+  flex: none;
+  width: 137px;
+  height: 137px;
+  background-image:
+    linear-gradient(rgba(74, 51, 32, 0.6) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(74, 51, 32, 0.6) 1px, transparent 1px);
+  background-size: 34px 34px;
+}
+
+.knight-dot {
+  position: absolute;
+  left: calc(var(--x) * 34px - 6px);
+  top: calc(var(--y) * 34px - 6px);
+  width: 12px;
+  height: 12px;
+  border-radius: 50%;
+  background: rgba(29, 26, 23, 0.55);
+  box-shadow: 0 0 0 3px rgba(244, 238, 225, 0.45);
+}
+
+.knight-grid__pc {
+  position: absolute;
+  left: 50px;
+  top: 50px;
+  width: 36px;
+  height: 36px;
+  font-size: 16px;
+}
+
+.knight-label {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  font-size: 14px;
+  color: var(--wood-ink);
+}
+
+.knight-label__kicker {
+  font-size: 13px;
+  letter-spacing: 0.1em;
+  opacity: 0.8;
+}
+
+.knight-label__name {
+  font-family: var(--font-brush);
+  font-size: 34px;
+  line-height: 1;
+}
+
+/* 叁：落子 → 翻面 → 现形 */
+.flip-demo {
+  gap: 14px;
+}
+
+.flip-demo__stage {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 12px;
+  font-size: 13px;
+  color: var(--wood-ink);
+}
+
+.flip-demo__pc {
+  width: 54px;
+  height: 54px;
+  font-size: 24px;
+}
+
+.flip-demo__pc--face {
+  font-size: 29px;
+}
+
+.flip-demo__edge {
+  width: 54px;
+  height: 54px;
+  display: flex;
+  justify-content: center;
+}
+
+.flip-demo__edge span {
+  width: 16px;
+  height: 54px;
+  border-radius: 50%;
+  background: linear-gradient(90deg, #841F0F 0%, #B9351F 38%, #7C5228 52%, #E9D3A3 64%, #F2DFB4 100%);
+  box-shadow: 0 6px 8px rgba(40, 25, 10, 0.3);
+}
+
+.flip-demo__arrow {
+  width: 22px;
+  height: 22px;
+  margin-bottom: 26px;
+  color: #5C3A1C;
+  stroke-width: 1.8;
+}
+
+/* ===== 棋子谱 ===== */
+.guide {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(min(260px, 100%), 1fr));
+  gap: 20px;
+}
+
+.guide__card {
+  padding: 26px 24px;
+  display: flex;
+  flex-direction: column;
+  gap: 18px;
+  background: var(--paper-soft);
+  border: 1px solid rgba(29, 26, 23, 0.1);
+}
+
+.guide__head {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+}
+
+.guide__pair {
+  display: flex;
+  align-items: center;
+}
+
+.guide__pair .pc {
+  width: 52px;
+  height: 52px;
+  font-size: 28px;
+}
+
+.guide__pair .pc-lq {
+  font-size: 23px;
+}
+
+.guide__pair .pc:first-child {
+  z-index: 1;
+}
+
+.guide__pair .pc + .pc {
+  margin-left: -12px;
+}
+
+.guide__names {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.guide__name {
+  margin: 0;
+  font-family: var(--font-brush);
+  font-weight: 400;
+  font-size: 32px;
+  line-height: 1;
+}
+
+.guide__latin {
+  font-family: var(--font-latin);
+  font-style: italic;
+  font-size: 16px;
+  color: var(--ink-mute);
+}
+
+.guide__rule {
+  margin: 0;
+  font-size: 16px;
+  line-height: 1.8;
+  color: var(--ink-2);
+  text-wrap: pretty;
+}
+
+.tag-relaxed {
+  align-self: flex-start;
+  padding: 3px 9px;
+  border: 1px solid rgba(179, 48, 30, 0.55);
+  border-radius: 2px;
+  font-size: 13px;
+  letter-spacing: 0.1em;
+  color: var(--cinnabar-text);
+}
+
+/* ===== 对局规矩 ===== */
+.rules {
+  flex-direction: row;
+  flex-wrap: wrap;
+  align-items: flex-start;
+  gap: 64px;
+}
+
+.rules__aside {
+  flex: 0 1 260px;
+  display: flex;
+  justify-content: center;
+  gap: 18px;
+}
+
+.rules__motto {
+  margin: 0;
+  writing-mode: vertical-rl;
+  font-family: var(--font-brush);
+  font-size: 104px;
+  line-height: 1;
+  letter-spacing: 0.06em;
+}
+
+.rules__sub {
+  display: flex;
+  flex-direction: column;
+  justify-content: flex-end;
+  gap: 10px;
+  padding-bottom: 6px;
+}
+
+.rules__sub-text {
+  writing-mode: vertical-rl;
+  font-size: 15px;
+  letter-spacing: 0.3em;
+  color: var(--ink-mute);
+}
+
+.rules__seal {
+  width: 30px;
+  height: 30px;
+  font-size: 20px;
+}
+
+.rules__main {
+  flex: 1 1 560px;
+  min-width: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 40px;
+}
+
+.rules__list {
+  margin: 0;
+  padding: 0;
+  list-style: none;
+  display: flex;
+  flex-direction: column;
+}
+
+.rules__item {
+  display: flex;
+  gap: 24px;
+  padding: 26px 0;
+  border-top: 1px dashed rgba(29, 26, 23, 0.28);
+}
+
+.rules__num {
+  flex: none;
+  width: 44px;
+  height: 44px;
+  border: 1.5px solid var(--cinnabar);
+  border-radius: 3px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-family: var(--font-brush);
+  font-size: 26px;
+  color: var(--cinnabar);
+}
+
+.rules__body {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.rules__title {
+  margin: 0;
+  font-size: 23px;
+  font-weight: 700;
+}
+
+.rules__text {
+  margin: 0;
+  font-size: 17px;
+  line-height: 1.85;
+  color: var(--ink-2);
+  text-wrap: pretty;
+}
+
+.rules__more {
+  margin: 0;
+  font-size: 15px;
+  color: var(--ink-mute);
+}
+
+/* ===== 入局 ===== */
+.cta {
+  position: relative;
+  z-index: 2;
+  overflow: hidden;
+  padding: 128px 24px 150px;
+  background: var(--ink);
+  color: var(--paper);
+  text-align: center;
+}
+
+.cta__sun {
+  position: absolute;
+  right: 10%;
+  top: 56px;
+  width: 220px;
+  height: 220px;
+  border-radius: 50%;
+  background: radial-gradient(circle, rgba(179, 48, 30, 0.9) 0%, rgba(179, 48, 30, 0.75) 58%, rgba(179, 48, 30, 0) 72%);
+}
+
+.cta__hills {
+  position: absolute;
+  left: 0;
+  bottom: 0;
+  width: 100%;
+  height: 260px;
+  pointer-events: none;
+}
+
+.cta__inner {
+  position: relative;
+  max-width: 900px;
+  margin: 0 auto;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 22px;
+}
+
+.cta__title {
+  margin: 0;
+  font-family: var(--font-brush);
+  font-weight: 400;
+  font-size: clamp(44px, 6vw, 80px);
+  line-height: 1.15;
+  text-wrap: balance;
+}
+
+.cta__text {
+  margin: 0;
+  font-size: 19px;
+  color: #CFC4B1;
+}
+
+.cta__btn {
+  margin-top: 18px;
+  padding: 0 36px;
+  box-shadow: 0 3px 0 #6E1A0D;
+}
+
+/* ===== 页脚 ===== */
+.footer {
+  position: relative;
+  z-index: 2;
+  padding: 30px 24px;
+}
+
+.footer__inner {
+  max-width: 1200px;
+  margin: 0 auto;
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: space-between;
+  gap: 16px;
+  font-size: 15px;
+  color: var(--ink-3);
+}
+
+.footer__brand {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.footer__seal {
+  width: 26px;
+  height: 26px;
+  font-size: 17px;
+}
+
+.footer__links {
+  display: flex;
+  gap: 24px;
+}
+
+.footer__links a {
+  color: var(--ink-3);
+}
+
+.footer__links a:hover {
+  color: var(--cinnabar);
+}
+
+/* ===== 窄屏 ===== */
+@media (max-width: 720px) {
+  .masthead {
+    padding: 20px 20px;
+  }
+
+  .nav__links {
+    display: none;
+  }
+
+  .hero {
+    padding: 8px 20px 96px;
+  }
+
+  .hero__inner {
+    gap: 40px;
+  }
+
+  .hero__lead {
+    font-size: 17px;
+    line-height: 1.9;
+  }
+
+  .hero__latin {
+    font-size: 21px;
+  }
+
+  .btn--hero,
+  .btn--hero-alt {
+    padding: 0 26px;
+  }
+
+  .section {
+    padding: 72px 20px 80px;
+  }
+
+  .section__inner {
+    gap: 40px;
+  }
+
+  .step {
+    padding: 24px;
+  }
+
+  .rules {
+    gap: 40px;
+  }
+
+  .rules__aside {
+    flex-basis: 100%;
+  }
+
+  .rules__motto {
+    font-size: 72px;
+  }
+
+  .rules__item {
+    gap: 18px;
+  }
+
+  .cta {
+    padding: 96px 20px 120px;
+  }
+
+  .cta__sun {
+    right: -40px;
+    top: 24px;
+    width: 160px;
+    height: 160px;
+  }
+}

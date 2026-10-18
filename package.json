@@ -1,0 +1,14 @@
+{
+  "name": "shadowflip",
+  "version": "2.0.0",
+  "description": "影翻棋 ShadowFlip：网页版暗子象棋，双人同屏对弈",
+  "private": true,
+  "license": "MIT",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/AntlerPotato/ShadowFlip.git"
+  },
+  "scripts": {
+    "test": "node --test tests/*.test.js"
+  }
+}

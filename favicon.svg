@@ -1,0 +1,5 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64">
+  <rect x="4" y="4" width="56" height="56" rx="9" fill="#B3301E" transform="rotate(-4 32 32)" />
+  <rect x="9.5" y="9.5" width="45" height="45" rx="5" fill="none" stroke="#FBF0E0" stroke-opacity="0.85" stroke-width="2.5" transform="rotate(-4 32 32)" />
+  <text x="32" y="44" text-anchor="middle" font-family="'Ma Shan Zheng','Kaiti SC','STKaiti','KaiTi',serif" font-size="34" fill="#FBF0E0">影</text>
+</svg>

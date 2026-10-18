@@ -1,118 +1,398 @@
 <!DOCTYPE html>
-<html lang="zh">
+<html lang="zh-CN">
   <head>
     <meta charset="UTF-8" />
-    <title>ShadowFlip-影翻棋</title>
-    <!-- Tailwind CSS（开发环境） -->
-    <script src="https://cdn.tailwindcss.com"></script>
-    <!-- SweetAlert -->
-    <script src="https://unpkg.com/sweetalert/dist/sweetalert.min.js"></script>
-    <!-- 自定义样式 -->
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
-    <link rel="stylesheet" href="style.css">
-    <link rel="stylesheet" href="noticejs.css">
-    <script src="notice.js"></script>
-    <script src="https://cdn.jsdelivr.net/npm/marked/marked.min.js"></script>
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>影翻棋 ShadowFlip · 暗子象棋</title>
+    <meta
+      name="description"
+      content="影翻棋：除帅与将，三十枚棋子尽数扣置，红黑混洗、随机落位。暗子依开局位置的兵种行棋，一动即翻。双人同屏，打开浏览器即玩。"
+    />
+    <meta name="theme-color" content="#F4EEE1" />
+    <link rel="icon" href="favicon.svg" type="image/svg+xml" />
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      rel="stylesheet"
+      href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,500;0,600;1,500&family=LXGW+WenKai+TC:wght@400;700&family=Ma+Shan+Zheng&family=Zhi+Mang+Xing&display=swap"
+    />
+    <link rel="stylesheet" href="css/base.css" />
+    <link rel="stylesheet" href="css/landing.css" />
   </head>
-  <body class="bg-white">
-    <!-- 开始页面 -->
-    <div id="start-screen" class="h-screen flex flex-col items-center justify-center">
-      <h1 class="text-8xl font-bold mb-12">影翻棋</h1>
-      <button id="start-btn" class="px-8 py-4 text-2xl bg-green-500 text-white rounded-lg hover:bg-green-600 transition-colors">
-        开始游戏
-      </button>
-      <!-- 在开始页面添加音乐按钮 -->
-      <div class="fixed bottom-4 left-4">
-        <button id="music-btn-start" class="w-12 h-12 rounded-full bg-green-500 hover:bg-green-600 flex items-center justify-center text-white shadow-lg transition-colors">
-          <i class="fas fa-music text-xl"></i>
-        </button>
-      </div>
-    </div>
-
-    <!-- 游戏页面 -->
-    <div id="game-screen" class="fade-in hidden">
-      <div id="app" class="flex flex-col items-center p-4">
-        <!-- 标题 -->
-        <div class="mb-2 text-lg font-bold">
-          ShadowFlip-影翻棋（By 土豆）
-        </div>
-
-        <!-- 当前回合显示 -->
-        <div class="mb-16 flex items-center gap-4">
-          当前回合：
-          <span id="current-player"></span>
-          <button id="draw-button" class="ml-8 text-white px-4 py-1 rounded bg-blue-500 hover:bg-blue-600">求和</button>
-        </div>
-
-        <!-- 悔棋按钮和棋盘区域的容器 -->
-        <div class="relative">
-          <!-- 悔棋按钮 -->
-          <div class="absolute w-full flex justify-between -top-[50px]">  
-            <div class="flex gap-2 mx-4">  
-                <button id="surrender-red" class="text-white px-4 py-2 rounded bg-red-500 hover:bg-red-600">认输</button>  
-                <button id="undo-black" class="text-white px-4 py-2 rounded">红方悔棋</button>  
-            </div>  
-            <div class="flex gap-2 mx-4">  
-                <button id="surrender-black" class="text-white px-4 py-2 rounded bg-red-500 hover:bg-red-600">认输</button>  
-                <button id="undo-red" class="text-white px-4 py-2 rounded">黑方悔棋</button>  
-            </div>  
-        </div>
-
-          <!-- 棋盘区域 -->
-          <div id="chess-board" class="bg-green-200 p-2 rounded"></div>
-        </div>
-
-        <!-- 最近被吃掉的棋子 -->
-        <div class="text-sm text-gray-700 mt-2">
-          刚刚被吃掉的棋子是：
-          <span id="last-captured"></span>
-        </div>
-
-        <!-- 淘汰的棋子显示 -->
-        <div class="flex flex-col items-start mt-2 text-sm">
-          <div>
-            <span class="text-red-600">红方淘汰的棋子：</span>
-            <span id="red-eliminated"></span>
+  <body>
+    <div class="page paper">
+      <header class="masthead">
+        <a class="brand" href="#top">
+          <span class="seal seal--framed brand-seal" aria-hidden="true"><span class="seal__v">影翻</span></span>
+          <span class="brand__text">
+            <span class="brand__name">影翻棋</span>
+            <span class="brand__latin">ShadowFlip</span>
+          </span>
+        </a>
+        <nav class="nav" aria-label="主导航">
+          <div class="nav__links">
+            <a href="#play">玩法</a>
+            <a href="#pieces">棋子</a>
+            <a href="#rules">规矩</a>
+            <a href="https://github.com/AntlerPotato/ShadowFlip">源码</a>
           </div>
-          <div>
-            黑方淘汰的棋子：
-            <span id="black-eliminated"></span>
+          <div class="nav__actions">
+            <button class="icon-btn music-toggle" id="music-btn" type="button" aria-label="背景音乐" aria-pressed="true">
+              <svg class="icon" viewBox="0 0 24 24" aria-hidden="true">
+                <path d="M9 18V5l11-2v13" />
+                <circle cx="6" cy="18" r="3" />
+                <circle cx="17" cy="16" r="3" />
+                <path class="music__slash" d="M3 3l18 18" />
+              </svg>
+            </button>
+            <a class="btn btn--primary nav__play" href="game.html">入局</a>
+          </div>
+        </nav>
+      </header>
+
+      <main>
+        <!-- 首屏 -->
+        <section class="hero" id="top">
+          <svg class="hero__hills" viewBox="0 0 1440 240" preserveAspectRatio="xMidYMax slice" aria-hidden="true">
+            <defs>
+              <linearGradient id="hills-a" x1="0" y1="0" x2="0" y2="1">
+                <stop offset="0" stop-color="#1D1A17" stop-opacity="0.1" />
+                <stop offset="1" stop-color="#1D1A17" stop-opacity="0" />
+              </linearGradient>
+              <linearGradient id="hills-b" x1="0" y1="0" x2="0" y2="1">
+                <stop offset="0" stop-color="#1D1A17" stop-opacity="0.17" />
+                <stop offset="1" stop-color="#1D1A17" stop-opacity="0" />
+              </linearGradient>
+              <filter id="hills-blur" x="-10%" y="-10%" width="120%" height="120%"><feGaussianBlur stdDeviation="3" /></filter>
+            </defs>
+            <path d="M0 170 C 110 130 170 92 250 110 C 320 126 372 70 460 58 C 540 48 600 112 690 128 C 770 142 830 92 910 86 C 1000 80 1050 138 1130 134 C 1210 130 1268 70 1350 80 C 1400 86 1425 112 1440 122 L1440 240 L0 240 Z" fill="url(#hills-a)" filter="url(#hills-blur)" />
+            <path d="M0 240 L0 150 C 40 128 78 96 124 104 C 168 112 190 156 246 172 C 312 190 372 222 470 240 Z" fill="url(#hills-b)" filter="url(#hills-blur)" />
+            <path d="M1440 240 L1440 104 C 1398 94 1364 124 1322 136 C 1268 150 1236 194 1160 210 C 1096 222 1040 232 980 240 Z" fill="url(#hills-b)" filter="url(#hills-blur)" />
+            <path d="M8 150 C 48 124 84 98 124 104 C 150 108 170 128 194 148" fill="none" stroke="#1D1A17" stroke-opacity="0.42" stroke-width="2.5" stroke-linecap="round" />
+            <path d="M1432 106 C 1398 98 1366 120 1330 134 C 1300 146 1278 166 1250 186" fill="none" stroke="#1D1A17" stroke-opacity="0.38" stroke-width="2.5" stroke-linecap="round" />
+          </svg>
+
+          <div class="hero__inner">
+            <div class="hero__copy">
+              <p class="hero__kicker"><span class="rule-line" aria-hidden="true"></span>象棋 · 暗子变体</p>
+              <h1 class="hero__title">影翻棋</h1>
+              <p class="hero__latin">ShadowFlip — Chinese chess, played in the shadows.</p>
+              <p class="hero__lead">
+                除帅与将，三十枚棋子尽数扣置，红黑混洗、随机落位。暗子依开局位置的兵种行棋，一动即翻——你推出去的那一子，未必是自己人。
+              </p>
+              <div class="hero__actions">
+                <a class="btn btn--primary btn--hero" href="game.html">
+                  开始对局
+                  <svg class="icon" viewBox="0 0 24 24" aria-hidden="true"><path d="M5 12h14M13 6l6 6-6 6" /></svg>
+                </a>
+                <a class="btn btn--outline btn--hero-alt" href="#rules">先读规矩</a>
+              </div>
+              <ul class="hero__facts">
+                <li>双人同屏对弈</li>
+                <li>打开浏览器即玩</li>
+                <li>开源 · MIT</li>
+              </ul>
+            </div>
+
+            <figure class="hero__figure">
+              <div class="hero__stage" role="img" aria-label="一枚朱漆暗子悬在棋盘上方，它投下的影子里显出一个黑方的砲字">
+                <div class="hero__glow"></div>
+                <svg class="hero__peak" viewBox="0 0 560 220" aria-hidden="true">
+                  <defs>
+                    <linearGradient id="peak-fade" x1="0" y1="0" x2="0" y2="1">
+                      <stop offset="0" stop-color="#1D1A17" stop-opacity="0.2" />
+                      <stop offset="1" stop-color="#1D1A17" stop-opacity="0" />
+                    </linearGradient>
+                    <filter id="peak-blur" x="-10%" y="-10%" width="120%" height="120%"><feGaussianBlur stdDeviation="2.5" /></filter>
+                  </defs>
+                  <path d="M120 220 C 170 160 210 70 262 54 C 300 42 326 92 352 110 C 384 132 410 96 446 104 C 492 114 520 170 560 200 L560 220 Z" fill="url(#peak-fade)" filter="url(#peak-blur)" />
+                  <path d="M210 120 C 236 80 252 58 266 54 C 286 50 300 70 318 92" fill="none" stroke="#1D1A17" stroke-opacity="0.45" stroke-width="3" stroke-linecap="round" />
+                </svg>
+
+                <div class="hero__board">
+                  <div class="pc pc-lq pc-lq-black hero__pc" style="--x: 99; --y: 3">影</div>
+                  <div class="pc pc-lq pc-lq-black hero__pc" style="--x: 19; --y: 163">影</div>
+                  <div class="pc pc-lq pc-lq-red hero__pc" style="--x: 339; --y: 83">影</div>
+                  <div class="pc pc-face pc-red hero__pc hero__pc--face" style="--x: 259; --y: 163">兵</div>
+                </div>
+
+                <div class="hero__shadow">砲</div>
+
+                <svg class="hero__strokes" viewBox="0 0 540 620" aria-hidden="true">
+                  <path d="M62 268 C 44 200 70 140 132 112" stroke="#1D1A17" stroke-opacity="0.35" stroke-width="2.5" />
+                  <path d="M50 236 C 42 196 52 166 72 146" stroke="#1D1A17" stroke-opacity="0.2" stroke-width="1.5" />
+                  <path d="M318 168 C 344 220 340 282 296 322" stroke="#B3301E" stroke-opacity="0.45" stroke-width="2.5" />
+                </svg>
+
+                <div class="pc pc-lq pc-lq-red hero__lifted">影</div>
+
+                <div class="hero__poem">
+                  <p class="hero__verse">一子未翻<br />敌友难辨</p>
+                  <span class="seal hero__poem-seal" aria-hidden="true">影</span>
+                </div>
+              </div>
+              <figcaption class="hero__caption">
+                <span class="rule-line" aria-hidden="true"></span>朱漆在手，影中却是黑砲——翻开之前，只有影子知道它是谁。
+              </figcaption>
+            </figure>
+          </div>
+        </section>
+
+        <!-- 玩法 -->
+        <section class="section" id="play">
+          <div class="section__inner">
+            <div class="section__head">
+              <div class="section__titles">
+                <span class="section__kicker">玩法</span>
+                <h2 class="section__title">何谓「影翻」</h2>
+              </div>
+              <p class="section__aside">看懂这三步，就能上手。</p>
+            </div>
+
+            <div class="steps">
+              <article class="step">
+                <div class="step__head">
+                  <span class="step__num" aria-hidden="true">壹</span>
+                  <h3 class="step__title">暗置开局</h3>
+                </div>
+                <div class="step__art mini-board" aria-hidden="true">
+                  <div class="mini-row">
+                    <div class="pc pc-lq pc-lq-black">影</div><div class="pc pc-lq pc-lq-black">影</div><div class="pc pc-lq pc-lq-black">影</div><div class="pc pc-lq pc-lq-black">影</div><div class="pc pc-face pc-black">將</div><div class="pc pc-lq pc-lq-black">影</div><div class="pc pc-lq pc-lq-black">影</div><div class="pc pc-lq pc-lq-black">影</div><div class="pc pc-lq pc-lq-black">影</div>
+                  </div>
+                  <div class="mini-board__note"><span></span>其余三十子 · 红黑混洗<span></span></div>
+                  <div class="mini-row">
+                    <div class="pc pc-lq pc-lq-red">影</div><div class="pc pc-lq pc-lq-red">影</div><div class="pc pc-lq pc-lq-red">影</div><div class="pc pc-lq pc-lq-red">影</div><div class="pc pc-face pc-red">帥</div><div class="pc pc-lq pc-lq-red">影</div><div class="pc pc-lq pc-lq-red">影</div><div class="pc pc-lq pc-lq-red">影</div><div class="pc pc-lq pc-lq-red">影</div>
+                  </div>
+                </div>
+                <p class="step__text">帅、将明摆在九宫正中，其余三十子全部扣置。这三十子不分红黑，统一洗混后随机落位。</p>
+              </article>
+
+              <article class="step">
+                <div class="step__head">
+                  <span class="step__num" aria-hidden="true">贰</span>
+                  <h3 class="step__title">依位而行</h3>
+                </div>
+                <div class="step__art step__art--row" aria-hidden="true">
+                  <div class="knight-grid">
+                    <span class="knight-dot" style="--x: 1; --y: 0"></span>
+                    <span class="knight-dot" style="--x: 3; --y: 0"></span>
+                    <span class="knight-dot" style="--x: 0; --y: 1"></span>
+                    <span class="knight-dot" style="--x: 4; --y: 1"></span>
+                    <span class="knight-dot" style="--x: 0; --y: 3"></span>
+                    <span class="knight-dot" style="--x: 4; --y: 3"></span>
+                    <span class="knight-dot" style="--x: 1; --y: 4"></span>
+                    <span class="knight-dot" style="--x: 3; --y: 4"></span>
+                    <div class="pc pc-lq pc-lq-red pc--sm knight-grid__pc">影</div>
+                  </div>
+                  <div class="knight-label">
+                    <span class="knight-label__kicker">开局位置</span>
+                    <span class="knight-label__name">马位</span>
+                    <span>→ 走「日」字</span>
+                  </div>
+                </div>
+                <p class="step__text">暗子未翻时，按所在开局位置的兵种行棋：站在马位就走「日」，站在炮位就隔子打炮。朱漆暗子归红方调遣，黑漆暗子归黑方调遣。</p>
+              </article>
+
+              <article class="step">
+                <div class="step__head">
+                  <span class="step__num" aria-hidden="true">叁</span>
+                  <h3 class="step__title">一动即翻</h3>
+                </div>
+                <div class="step__art step__art--row flip-demo" aria-hidden="true">
+                  <div class="flip-demo__stage">
+                    <div class="pc pc-lq pc-lq-red flip-demo__pc">影</div>
+                    <span>落子</span>
+                  </div>
+                  <svg class="icon flip-demo__arrow" viewBox="0 0 24 24"><path d="M5 12h14M13 6l6 6-6 6" /></svg>
+                  <div class="flip-demo__stage">
+                    <div class="flip-demo__edge"><span></span></div>
+                    <span>翻面</span>
+                  </div>
+                  <svg class="icon flip-demo__arrow" viewBox="0 0 24 24"><path d="M5 12h14M13 6l6 6-6 6" /></svg>
+                  <div class="flip-demo__stage">
+                    <div class="pc pc-face pc-black flip-demo__pc flip-demo__pc--face">砲</div>
+                    <span>现形 · 归黑方</span>
+                  </div>
+                </div>
+                <p class="step__text">暗子走到空位，或吃下任意一子，落定后立即翻面，露出真实兵种与阵营。翻出来的，可能是对手的棋子。</p>
+              </article>
+            </div>
+          </div>
+        </section>
+
+        <!-- 棋子谱 -->
+        <section class="section section--tinted" id="pieces">
+          <div class="section__inner">
+            <div class="section__head">
+              <div class="section__titles">
+                <span class="section__kicker">棋子</span>
+                <h2 class="section__title">棋子谱</h2>
+              </div>
+              <p class="section__aside">翻开之后，各子按象棋本来的走法行棋；相（象）与仕（士）另有放宽。</p>
+            </div>
+
+            <div class="guide">
+              <article class="guide__card">
+                <div class="guide__head">
+                  <div class="guide__pair" aria-hidden="true"><div class="pc pc-face pc-red">帥</div><div class="pc pc-face pc-black">將</div></div>
+                  <div class="guide__names"><h3 class="guide__name">帅 · 将</h3><span class="guide__latin">General</span></div>
+                </div>
+                <p class="guide__rule">只在九宫内横竖走一步。两将不得在同一直线上无子相隔、正面相对。</p>
+              </article>
+              <article class="guide__card">
+                <div class="guide__head">
+                  <div class="guide__pair" aria-hidden="true"><div class="pc pc-face pc-red">車</div><div class="pc pc-face pc-black">俥</div></div>
+                  <div class="guide__names"><h3 class="guide__name">车</h3><span class="guide__latin">Chariot</span></div>
+                </div>
+                <p class="guide__rule">横竖直行，步数不限，途中不能越子。</p>
+              </article>
+              <article class="guide__card">
+                <div class="guide__head">
+                  <div class="guide__pair" aria-hidden="true"><div class="pc pc-face pc-red">馬</div><div class="pc pc-face pc-black">傌</div></div>
+                  <div class="guide__names"><h3 class="guide__name">马</h3><span class="guide__latin">Horse</span></div>
+                </div>
+                <p class="guide__rule">走「日」字。紧挨着的「马脚」被占，便跳不过去。</p>
+              </article>
+              <article class="guide__card">
+                <div class="guide__head">
+                  <div class="guide__pair" aria-hidden="true"><div class="pc pc-face pc-red">炮</div><div class="pc pc-face pc-black">砲</div></div>
+                  <div class="guide__names"><h3 class="guide__name">炮</h3><span class="guide__latin">Cannon</span></div>
+                </div>
+                <p class="guide__rule">移动同车；吃子时须隔一子作「炮架」。</p>
+              </article>
+              <article class="guide__card">
+                <div class="guide__head">
+                  <div class="guide__pair" aria-hidden="true"><div class="pc pc-face pc-red">相</div><div class="pc pc-face pc-black">象</div></div>
+                  <div class="guide__names"><h3 class="guide__name">相 · 象</h3><span class="guide__latin">Elephant</span></div>
+                </div>
+                <p class="guide__rule">走「田」字对角，「象眼」被堵不能飞。影翻棋中可以过河。</p>
+                <span class="tag-relaxed">影翻放宽</span>
+              </article>
+              <article class="guide__card">
+                <div class="guide__head">
+                  <div class="guide__pair" aria-hidden="true"><div class="pc pc-face pc-red">仕</div><div class="pc pc-face pc-black">士</div></div>
+                  <div class="guide__names"><h3 class="guide__name">仕 · 士</h3><span class="guide__latin">Advisor</span></div>
+                </div>
+                <p class="guide__rule">斜走一步。翻开后不再受九宫所限，全盘可走。</p>
+                <span class="tag-relaxed">影翻放宽</span>
+              </article>
+              <article class="guide__card">
+                <div class="guide__head">
+                  <div class="guide__pair" aria-hidden="true"><div class="pc pc-face pc-red">兵</div><div class="pc pc-face pc-black">卒</div></div>
+                  <div class="guide__names"><h3 class="guide__name">兵 · 卒</h3><span class="guide__latin">Soldier</span></div>
+                </div>
+                <p class="guide__rule">过河前只能前进一步；过河后可前进，也可左右平移。</p>
+              </article>
+              <article class="guide__card">
+                <div class="guide__head">
+                  <div class="guide__pair" aria-hidden="true"><div class="pc pc-lq pc-lq-red">影</div><div class="pc pc-lq pc-lq-black">影</div></div>
+                  <div class="guide__names"><h3 class="guide__name">暗子</h3><span class="guide__latin">Hidden piece</span></div>
+                </div>
+                <p class="guide__rule">扣置的棋子。朱漆归红方，黑漆归黑方，按所在开局位置的兵种行棋。</p>
+              </article>
+            </div>
+          </div>
+        </section>
+
+        <!-- 规矩 -->
+        <section class="section" id="rules">
+          <div class="section__inner rules">
+            <div class="rules__aside" aria-hidden="true">
+              <p class="rules__motto">观棋不语</p>
+              <div class="rules__sub">
+                <span class="rules__sub-text">同屏对弈 旁人莫言</span>
+                <span class="seal rules__seal">规</span>
+              </div>
+            </div>
+
+            <div class="rules__main">
+              <div class="section__titles">
+                <span class="section__kicker">规矩</span>
+                <h2 class="section__title">对局规矩</h2>
+              </div>
+              <ol class="rules__list">
+                <li class="rules__item">
+                  <span class="rules__num" aria-hidden="true">壹</span>
+                  <div class="rules__body">
+                    <h3 class="rules__title">胜负</h3>
+                    <p class="rules__text">吃掉对方的帅或将，即告胜利。</p>
+                  </div>
+                </li>
+                <li class="rules__item">
+                  <span class="rules__num" aria-hidden="true">贰</span>
+                  <div class="rules__body">
+                    <h3 class="rules__title">悔棋</h3>
+                    <p class="rules__text">刚走完的一方，可在对手落子前收回这一步。前提是：该子与被吃之子都已翻开，且该子此前至少走过一步。翻子之步，落子无悔。</p>
+                  </div>
+                </li>
+                <li class="rules__item">
+                  <span class="rules__num" aria-hidden="true">叁</span>
+                  <div class="rules__body">
+                    <h3 class="rules__title">求和</h3>
+                    <p class="rules__text">一方提议求和，对方同意，对局即以和棋收场。</p>
+                  </div>
+                </li>
+                <li class="rules__item">
+                  <span class="rules__num" aria-hidden="true">肆</span>
+                  <div class="rules__body">
+                    <h3 class="rules__title">认输</h3>
+                    <p class="rules__text">只能在己方回合认输。</p>
+                  </div>
+                </li>
+              </ol>
+              <p class="rules__more">对局中随时点右上角「规则」，可查看完整条文。</p>
+            </div>
+          </div>
+        </section>
+
+        <!-- 入局 -->
+        <section class="cta">
+          <div class="cta__sun" aria-hidden="true"></div>
+          <svg class="cta__hills" viewBox="0 0 1440 260" preserveAspectRatio="xMidYMax slice" aria-hidden="true">
+            <defs>
+              <linearGradient id="cta-a" x1="0" y1="0" x2="0" y2="1">
+                <stop offset="0" stop-color="#F4EEE1" stop-opacity="0.1" />
+                <stop offset="1" stop-color="#F4EEE1" stop-opacity="0.02" />
+              </linearGradient>
+              <linearGradient id="cta-b" x1="0" y1="0" x2="0" y2="1">
+                <stop offset="0" stop-color="#F4EEE1" stop-opacity="0.16" />
+                <stop offset="1" stop-color="#F4EEE1" stop-opacity="0.03" />
+              </linearGradient>
+              <filter id="cta-blur" x="-10%" y="-10%" width="120%" height="120%"><feGaussianBlur stdDeviation="3" /></filter>
+            </defs>
+            <path d="M0 160 C 120 120 200 80 300 96 C 390 110 430 60 520 52 C 610 44 660 110 760 120 C 860 130 900 70 1000 66 C 1100 62 1150 120 1240 112 C 1320 106 1380 70 1440 80 L1440 260 L0 260 Z" fill="url(#cta-a)" filter="url(#cta-blur)" />
+            <path d="M0 260 L0 190 C 70 170 130 130 200 140 C 270 150 310 200 400 214 C 480 226 560 244 640 260 Z" fill="url(#cta-b)" filter="url(#cta-blur)" />
+            <path d="M1440 260 L1440 150 C 1380 140 1330 170 1270 188 C 1210 206 1150 236 1060 260 Z" fill="url(#cta-b)" filter="url(#cta-blur)" />
+          </svg>
+          <div class="cta__inner">
+            <h2 class="cta__title">棋已摆好，只差两个人。</h2>
+            <p class="cta__text">同一块屏幕，红黑各执一方。</p>
+            <a class="btn btn--primary btn--hero cta__btn" href="game.html">
+              开始对局
+              <svg class="icon" viewBox="0 0 24 24" aria-hidden="true"><path d="M5 12h14M13 6l6 6-6 6" /></svg>
+            </a>
+          </div>
+        </section>
+      </main>
+
+      <footer class="footer">
+        <div class="footer__inner">
+          <div class="footer__brand">
+            <span class="seal footer__seal" aria-hidden="true">影</span>
+            <span>影翻棋 ShadowFlip · 作者 Antler</span>
+          </div>
+          <div class="footer__links">
+            <a href="https://github.com/AntlerPotato/ShadowFlip">GitHub 源码</a>
+            <a href="https://github.com/AntlerPotato/ShadowFlip/blob/main/LICENSE">MIT 许可</a>
           </div>
         </div>
-
-        <!-- 修改游戏页面的音乐按钮 ID -->
-        <div class="fixed bottom-4 left-4">
-          <button id="music-btn-game" class="w-12 h-12 rounded-full bg-green-500 hover:bg-green-600 flex items-center justify-center text-white shadow-lg transition-colors">
-            <i class="fas fa-music text-xl"></i>
-          </button>
-        </div>
-      </div>
+      </footer>
     </div>
 
-    <!-- 左上角"规则"按钮 -->
-    <div class="fixed top-4 left-4">
-      <button id="rules-btn" class="w-12 h-12 rounded-full bg-blue-500 hover:bg-blue-600 flex items-center justify-center text-white shadow-lg transition-colors">
-        <i class="fas fa-book text-xl"></i>
-      </button>
-    </div>
-
-    <!-- 规则模态框 -->
-    <div id="rules-modal" class="hidden fixed inset-0 bg-black bg-opacity-50 z-50 flex items-center justify-center">
-      <div class="bg-white p-6 rounded-lg max-w-2xl w-full mx-4">
-        <div class="flex justify-between items-center mb-4">
-          <h2 class="text-xl font-bold">游戏规则</h2>
-          <button id="rules-modal-close" class="text-gray-500 hover:text-gray-700">
-            <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" />
-            </svg>
-          </button>
-        </div>
-        <div id="rules-content" class="prose max-w-none" style="max-height: 70vh; overflow-y: auto;"></div>
-      </div>
-    </div>
-
-    <!-- 引入 canvas-confetti -->
-    <script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.9.3/dist/confetti.browser.min.js"></script>
-    <script src="main.js"></script>
+    <script src="js/audio.js"></script>
+    <script>
+      ShadowFlipAudio.bindMusicToggle(document.getElementById('music-btn'));
+      ShadowFlipAudio.startMusic();
+    </script>
   </body>
 </html>

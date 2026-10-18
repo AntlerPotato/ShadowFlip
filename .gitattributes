@@ -1,0 +1,15 @@
+# 文本文件统一使用 LF 换行
+* text=auto eol=lf
+
+# 二进制资源
+*.png  binary
+*.jpg  binary
+*.jpeg binary
+*.gif  binary
+*.webp binary
+*.ico  binary
+*.wav  binary
+*.mp3  binary
+*.ogg  binary
+*.woff  binary
+*.woff2 binary
