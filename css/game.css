@@ -1,0 +1,958 @@
+/* 影翻棋 · 对局页：顶栏、双方面板、棋盘、上一手 */
+
+.game {
+  min-height: 100vh;
+  min-height: 100dvh;
+  display: flex;
+  flex-direction: column;
+  overflow-x: hidden;
+}
+
+.game__hills {
+  position: absolute;
+  left: 0;
+  bottom: 0;
+  width: 100%;
+  height: 220px;
+  pointer-events: none;
+}
+
+.game__noscript {
+  margin: 40px auto;
+  font-size: 18px;
+  text-align: center;
+}
+
+/* ===== 顶栏 ===== */
+.topbar {
+  position: relative;
+  z-index: 2;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 16px;
+  flex-wrap: wrap;
+  padding: 16px 32px;
+  border-bottom: 1px solid var(--line);
+}
+
+.topbar__back {
+  display: none;
+}
+
+.topbar__brand {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.topbar__seal {
+  --frame: 2.5px;
+  width: 40px;
+  height: 40px;
+  font-size: 16px;
+  border-radius: 4px 7px 5px 8px;
+  transform: rotate(-4deg);
+}
+
+.topbar__name {
+  font-family: var(--font-brush);
+  font-size: 28px;
+  line-height: 1;
+}
+
+.topbar__status {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+}
+
+.topbar__moveno {
+  font-size: 15px;
+  letter-spacing: 0.1em;
+  color: var(--ink-mute);
+}
+
+.topbar__sep {
+  width: 1px;
+  height: 18px;
+  background: var(--line-strong);
+}
+
+.turn {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  font-size: 21px;
+  font-weight: 700;
+  color: var(--ink);
+}
+
+.turn__dot {
+  width: 12px;
+  height: 12px;
+  border-radius: 50%;
+  background: var(--ink);
+  box-shadow: 0 0 0 4px rgba(29, 26, 23, 0.14);
+}
+
+.turn[data-side='red'] {
+  color: var(--piece-red);
+}
+
+.turn[data-side='red'] .turn__dot {
+  background: var(--cinnabar);
+  box-shadow: 0 0 0 4px rgba(179, 48, 30, 0.18);
+}
+
+.turn[data-side='none'] .turn__dot {
+  display: none;
+}
+
+.topbar__tools {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+/* ===== 桌面布局：黑方面板 | 棋盘 | 红方面板 ===== */
+.table {
+  /* 格距随视口高度缩放，其余尺寸都由格距推出 */
+  --cell: clamp(46px, calc((100vh - 250px) / 11), 58px);
+  --pad: calc(var(--cell) - 18px);
+  --pc: calc(var(--cell) * 0.778 + 4.9px);
+  --frame-pad: calc(var(--cell) * 0.333 - 7.3px);
+  --board-w: calc(var(--cell) * 10 - 36px);
+  --board-h: calc(var(--cell) * 11 - 36px);
+  --frame-w: calc(var(--board-w) + var(--frame-pad) * 2);
+  position: relative;
+  z-index: 1;
+  flex: 1;
+  display: flex;
+  justify-content: center;
+  align-items: stretch;
+  gap: clamp(24px, 3vw, 48px);
+  padding: 24px 32px 28px;
+}
+
+.table__center {
+  flex: none;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 16px;
+}
+
+/* ===== 双方面板 ===== */
+.side {
+  --tint: rgba(29, 26, 23, 0.05);
+  position: relative;
+  flex: 0 1 288px;
+  min-width: 0;
+  align-self: flex-start;
+  display: grid;
+  grid-template-columns: 50px minmax(0, 1fr);
+  grid-template-areas:
+    'general id'
+    'stats stats'
+    'fallen fallen'
+    'actions actions'
+    'note note';
+  column-gap: 14px;
+  row-gap: 20px;
+  padding: 22px;
+  background: rgba(251, 247, 238, 0.92);
+  border: 1px solid rgba(29, 26, 23, 0.14);
+  border-radius: 4px;
+  box-shadow: 0 14px 30px rgba(60, 40, 20, 0.08);
+  transition: border-color 0.2s ease, box-shadow 0.2s ease;
+}
+
+.side--red {
+  --tint: rgba(179, 48, 30, 0.06);
+  align-self: flex-end;
+}
+
+.side.is-active {
+  background: rgba(251, 247, 238, 0.96);
+  border-color: rgba(29, 26, 23, 0.55);
+  box-shadow: 0 0 0 0.5px rgba(29, 26, 23, 0.55), 0 0 0 5px rgba(29, 26, 23, 0.07), 0 16px 34px rgba(60, 40, 20, 0.12);
+}
+
+.side--red.is-active {
+  border-color: rgba(179, 48, 30, 0.6);
+  box-shadow: 0 0 0 0.5px rgba(179, 48, 30, 0.6), 0 0 0 5px rgba(179, 48, 30, 0.08), 0 16px 34px rgba(120, 40, 20, 0.12);
+}
+
+.side__tag {
+  position: absolute;
+  top: -15px;
+  right: 18px;
+  display: none;
+  padding: 4px 12px;
+  border-radius: 2px;
+  background: var(--ink);
+  color: var(--paper);
+  font-size: 14px;
+  letter-spacing: 0.24em;
+  transform: rotate(2deg);
+  box-shadow: 0 2px 0 #000;
+}
+
+.side--red .side__tag {
+  background: var(--cinnabar);
+  color: var(--seal-text);
+  box-shadow: 0 2px 0 var(--cinnabar-deep);
+}
+
+.side.is-active .side__tag {
+  display: block;
+}
+
+.side__general {
+  grid-area: general;
+  width: 50px;
+  height: 50px;
+  font-size: 27px;
+  align-self: center;
+}
+
+.side__id {
+  grid-area: id;
+  min-width: 0;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  gap: 6px;
+}
+
+.side__name {
+  margin: 0;
+  font-family: var(--font-brush);
+  font-weight: 400;
+  font-size: 32px;
+  line-height: 1;
+}
+
+.side--red .side__name {
+  color: var(--piece-red);
+}
+
+.side__hint {
+  margin: 0;
+  font-size: 14px;
+  line-height: 1.5;
+  color: var(--ink-mute);
+}
+
+.side__counts {
+  display: none;
+  margin: 0;
+  font-size: 12px;
+  color: var(--ink-mute);
+}
+
+.side__stats {
+  grid-area: stats;
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 10px;
+}
+
+.stat {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 10px 12px;
+  background: var(--tint);
+  border-radius: 3px;
+}
+
+.stat__pc {
+  width: 24px;
+  height: 24px;
+  font-size: 13px;
+}
+
+.stat__pc.pc-lq {
+  font-size: 11px;
+}
+
+.stat__body {
+  display: flex;
+  flex-direction: column;
+}
+
+.stat__label {
+  font-size: 12px;
+  color: var(--ink-mute);
+}
+
+.stat__value {
+  font-size: 22px;
+  font-weight: 700;
+  line-height: 1.15;
+}
+
+.side__fallen {
+  grid-area: fallen;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.side__fallen-head {
+  display: flex;
+  justify-content: space-between;
+  font-size: 14px;
+  color: var(--ink-mute);
+}
+
+.side__fallen-list {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+  min-height: 50px;
+  padding: 9px;
+  background: var(--tint);
+  border-radius: 3px;
+}
+
+.side__fallen-list .pc {
+  width: 32px;
+  height: 32px;
+  font-size: 17px;
+  opacity: 0.85;
+}
+
+.side__actions {
+  grid-area: actions;
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 10px;
+  padding-top: 16px;
+  border-top: 1px dashed rgba(29, 26, 23, 0.2);
+}
+
+.side__btn {
+  padding: 0 10px;
+  font-size: 17px;
+}
+
+.side__note {
+  grid-area: note;
+  margin: -10px 0 0;
+  font-size: 13px;
+  line-height: 1.6;
+  color: var(--ink-mute);
+}
+
+.side__status {
+  display: none;
+  grid-area: status;
+}
+
+/* ===== 棋盘 ===== */
+.board-frame {
+  padding: var(--frame-pad);
+  border-radius: 6px;
+  background: linear-gradient(145deg, #8E5C2C, #6A3F1E 60%, #5A3418);
+  box-shadow:
+    inset 0 1px 0 rgba(255, 220, 170, 0.35),
+    0 2px 0 #3F2410,
+    0 26px 50px rgba(60, 35, 15, 0.3);
+}
+
+.board {
+  position: relative;
+  width: var(--board-w);
+  height: var(--board-h);
+  border-radius: 2px;
+  background:
+    radial-gradient(ellipse at 28% 16%, rgba(255, 244, 215, 0.6), rgba(255, 244, 215, 0) 58%),
+    linear-gradient(180deg, #E9CE9B, #D5B076);
+  touch-action: manipulation;
+  user-select: none;
+  -webkit-user-select: none;
+}
+
+.board__wood {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  mix-blend-mode: multiply;
+  opacity: 0.5;
+}
+
+.board__grid {
+  position: absolute;
+  left: var(--pad);
+  top: var(--pad);
+  width: calc(var(--cell) * 8);
+  height: calc(var(--cell) * 9);
+  overflow: visible;
+  fill: none;
+  stroke: var(--wood-ink);
+  stroke-width: 1.2px;
+}
+
+.board__grid path {
+  vector-effect: non-scaling-stroke;
+}
+
+.board__grid .board__frame-line {
+  stroke-width: 2.4px;
+}
+
+.board__river {
+  position: absolute;
+  left: var(--pad);
+  top: calc(var(--pad) + var(--cell) * 4);
+  width: calc(var(--cell) * 8);
+  height: var(--cell);
+  display: flex;
+  align-items: center;
+  justify-content: space-around;
+  font-family: var(--font-brush);
+  font-size: calc(var(--cell) * 0.556 + 1.8px);
+  letter-spacing: 0.6em;
+  color: rgba(74, 51, 32, 0.78);
+}
+
+.board__layer {
+  position: absolute;
+  inset: 0;
+}
+
+.board__piece,
+.mark,
+.point {
+  position: absolute;
+  left: calc(var(--pad) + var(--c) * var(--cell) - var(--s) / 2);
+  top: calc(var(--pad) + var(--r) * var(--cell) - var(--s) / 2);
+  width: var(--s);
+  height: var(--s);
+}
+
+.board__piece {
+  --s: var(--pc);
+  font-size: calc(var(--pc) * 0.5 + 2px);
+  transition:
+    left 0.32s cubic-bezier(0.3, 0.7, 0.3, 1),
+    top 0.32s cubic-bezier(0.3, 0.7, 0.3, 1),
+    translate 0.18s ease,
+    scale 0.18s ease,
+    filter 0.18s ease;
+}
+
+.board__piece.pc-lq {
+  font-size: calc(var(--pc) * 0.43 + 1.5px);
+}
+
+.board__piece.is-lifted {
+  z-index: 2;
+  translate: 0 calc(var(--pc) * -0.12);
+  filter: drop-shadow(0 10px 6px rgba(40, 25, 10, 0.28));
+}
+
+.board__piece.is-flying {
+  z-index: 5;
+  scale: 1.12;
+  filter: drop-shadow(0 14px 8px rgba(40, 25, 10, 0.3));
+}
+
+.board__piece.is-returning {
+  z-index: 5;
+}
+
+.board__piece.is-taken {
+  animation: piece-taken 0.22s ease-in forwards;
+}
+
+.board__piece.is-entering {
+  animation: piece-in 0.28s ease-out;
+}
+
+@keyframes piece-taken {
+  to {
+    opacity: 0;
+    scale: 0.7;
+  }
+}
+
+@keyframes piece-in {
+  from {
+    opacity: 0;
+    scale: 0.85;
+  }
+}
+
+/* 棋盘标记 */
+.mark {
+  pointer-events: none;
+}
+
+.mark--hint {
+  --s: calc(var(--pc) * 0.29 + 1.5px);
+  border-radius: 50%;
+  background: rgba(29, 26, 23, 0.45);
+  box-shadow: 0 0 0 4px rgba(250, 240, 215, 0.35);
+}
+
+.mark--from {
+  --s: calc(var(--pc) * 0.43 + 2.5px);
+  border: 1.5px dashed rgba(74, 51, 32, 0.75);
+  border-radius: 50%;
+}
+
+.mark--cap {
+  --s: calc(var(--pc) * 1.28 - 4px);
+  border: 2.5px solid var(--cinnabar);
+  border-radius: 50%;
+  box-shadow: 0 0 0 4px rgba(179, 48, 30, 0.2);
+}
+
+/* 四角括号：选中（朱砂）与上一手落点（墨褐） */
+.mark--sel,
+.mark--to {
+  background:
+    linear-gradient(var(--k), var(--k)) left top / var(--len) var(--w) no-repeat,
+    linear-gradient(var(--k), var(--k)) left top / var(--w) var(--len) no-repeat,
+    linear-gradient(var(--k), var(--k)) right top / var(--len) var(--w) no-repeat,
+    linear-gradient(var(--k), var(--k)) right top / var(--w) var(--len) no-repeat,
+    linear-gradient(var(--k), var(--k)) left bottom / var(--len) var(--w) no-repeat,
+    linear-gradient(var(--k), var(--k)) left bottom / var(--w) var(--len) no-repeat,
+    linear-gradient(var(--k), var(--k)) right bottom / var(--len) var(--w) no-repeat,
+    linear-gradient(var(--k), var(--k)) right bottom / var(--w) var(--len) no-repeat;
+}
+
+.mark--sel {
+  --s: calc(var(--pc) * 1.28);
+  --k: var(--cinnabar);
+  --len: calc(var(--pc) * 0.3 + 1px);
+  --w: calc(var(--pc) * 0.036 + 1.2px);
+  z-index: 3;
+}
+
+.mark--to {
+  --s: calc(var(--pc) * 1.28 - 4px);
+  --k: #6E4A22;
+  --len: calc(var(--pc) * 0.214 + 0.3px);
+  --w: 2px;
+}
+
+/* 落点按钮：透明，覆盖每个交叉点 */
+.point {
+  --s: var(--cell);
+  padding: 0;
+  border: 0;
+  border-radius: 50%;
+  background: transparent;
+  cursor: default;
+  -webkit-tap-highlight-color: transparent;
+}
+
+.point.is-actionable {
+  cursor: pointer;
+}
+
+.point:focus-visible {
+  outline-offset: -3px;
+}
+
+/* ===== 上一手 ===== */
+.lastmove {
+  width: var(--frame-w);
+  max-width: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 16px;
+}
+
+.lastmove__info {
+  min-width: 0;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  font-size: 15px;
+  line-height: 1.5;
+  color: var(--ink-2);
+}
+
+.lastmove__tag {
+  flex: none;
+  padding: 2px 8px;
+  border: 1px solid var(--line-strong);
+  border-radius: 2px;
+  font-size: 13px;
+  letter-spacing: 0.2em;
+  color: var(--ink-mute);
+}
+
+.lastmove__pc {
+  width: 28px;
+  height: 28px;
+  font-size: 15px;
+}
+
+.lastmove__pc.pc-lq {
+  font-size: 13px;
+}
+
+.lastmove__btn {
+  flex: none;
+  padding: 0 20px;
+  letter-spacing: 0.1em;
+}
+
+.lastmove__btn[hidden] {
+  display: none;
+}
+
+/* ===== 窄屏：面板叠在棋盘上下 ===== */
+@media (max-width: 1179px) {
+  .table {
+    --cell: min(56px, calc((100vw + 36px) / 10.7));
+    flex-direction: column;
+    justify-content: flex-start;
+    align-items: center;
+    gap: 12px;
+    padding: 16px 7px 24px;
+  }
+
+  .table__center {
+    display: contents;
+  }
+
+  .side--black {
+    order: 1;
+  }
+
+  .board-frame {
+    order: 2;
+  }
+
+  .side--red {
+    order: 3;
+  }
+
+  .lastmove {
+    order: 4;
+    width: calc(var(--frame-w) - 14px);
+  }
+
+  .side {
+    flex: none;
+    align-self: center;
+    width: var(--frame-w);
+    max-width: 100%;
+    grid-template-columns: 36px minmax(0, 1fr) auto;
+    grid-template-areas:
+      'general id actions'
+      'general fallen actions'
+      'status status status';
+    column-gap: 10px;
+    row-gap: 5px;
+    padding: 10px 12px;
+    box-shadow: none;
+  }
+
+  .side.is-active {
+    box-shadow: 0 0 0 0.5px rgba(29, 26, 23, 0.55), 0 0 0 4px rgba(29, 26, 23, 0.07);
+  }
+
+  .side--red.is-active {
+    box-shadow: 0 0 0 0.5px rgba(179, 48, 30, 0.6), 0 0 0 4px rgba(179, 48, 30, 0.08);
+  }
+
+  .side.is-active .side__tag,
+  .side__stats,
+  .side__hint,
+  .side__note,
+  .side__fallen-count {
+    display: none;
+  }
+
+  .side__general {
+    --ring: 1.2px;
+    --d1: 1.5px;
+    --d2: 3px;
+    --d3: 5px;
+    --blur: 7px;
+    width: 36px;
+    height: 36px;
+    font-size: 20px;
+  }
+
+  .side__id {
+    flex-direction: row;
+    justify-content: flex-start;
+    align-items: baseline;
+    gap: 8px;
+  }
+
+  .side__name {
+    font-size: 22px;
+  }
+
+  .side__counts {
+    display: block;
+  }
+
+  .side__fallen {
+    flex-direction: row;
+    align-items: center;
+    gap: 6px;
+    min-height: 22px;
+  }
+
+  .side__fallen-head {
+    flex: none;
+    font-size: 12px;
+  }
+
+  .side__fallen-list {
+    gap: 4px;
+    min-height: 0;
+    padding: 0;
+    background: none;
+  }
+
+  .side__fallen-list .pc {
+    --ring: 1.2px;
+    --d1: 1px;
+    --d2: 2px;
+    --d3: 3px;
+    --blur: 4px;
+    width: 22px;
+    height: 22px;
+    font-size: 12px;
+  }
+
+  .side__actions {
+    align-self: center;
+    display: flex;
+    gap: 6px;
+    padding: 0;
+    border: 0;
+  }
+
+  .side__btn {
+    padding: 0 12px;
+    gap: 5px;
+    font-size: 15px;
+  }
+
+  .side__btn .icon {
+    width: 16px;
+    height: 16px;
+  }
+
+  /* 暂不可用的按钮只留图标 */
+  .side__btn[aria-disabled='true'] {
+    width: 44px;
+    padding: 0;
+  }
+
+  .side__btn[aria-disabled='true'] .side__btn-label {
+    display: none;
+  }
+
+  .side__status {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    min-height: 38px;
+    margin: 5px 0 0;
+    padding: 8px 10px;
+    background: var(--tint);
+    border-radius: 3px;
+    font-size: 14px;
+    line-height: 1.45;
+    color: var(--ink-2);
+  }
+
+  .side.is-active .side__status {
+    background: rgba(29, 26, 23, 0.07);
+  }
+
+  .side--red.is-active .side__status {
+    background: rgba(179, 48, 30, 0.07);
+  }
+
+  .side__status-text {
+    min-width: 0;
+    overflow: hidden;
+    white-space: nowrap;
+    text-overflow: ellipsis;
+  }
+
+  .side__status-pc {
+    --ring: 1px;
+    --d1: 1px;
+    --d2: 2px;
+    --d3: 3px;
+    --blur: 4px;
+    width: 22px;
+    height: 22px;
+    font-size: 12px;
+  }
+
+  .side__status-pc.pc-lq {
+    font-size: 10px;
+  }
+
+  .side__status-pc[hidden] {
+    display: none;
+  }
+
+  .lastmove__info {
+    gap: 7px;
+    font-size: 13px;
+  }
+
+  .lastmove__tag {
+    padding: 1px 6px;
+    font-size: 12px;
+    letter-spacing: 0;
+  }
+
+  .lastmove__pc {
+    display: none;
+  }
+
+  .lastmove__btn {
+    padding: 0 16px;
+    font-size: 15px;
+    letter-spacing: 0;
+  }
+}
+
+/* ===== 手机 ===== */
+@media (max-width: 640px) {
+  .game {
+    padding: 8px 0 16px;
+  }
+
+  .topbar {
+    flex-wrap: nowrap;
+    gap: 4px;
+    padding: 0 10px;
+    border-bottom: 0;
+  }
+
+  .topbar__back {
+    display: inline-flex;
+    border: 0;
+  }
+
+  .topbar__back .icon {
+    width: 21px;
+    height: 21px;
+  }
+
+  .topbar__brand,
+  .topbar__home,
+  .topbar__sep,
+  .topbar__label,
+  .music__dot {
+    display: none;
+  }
+
+  .music-toggle[aria-pressed] .music__on,
+  .music-toggle[aria-pressed] .music__off {
+    display: none;
+  }
+
+  .topbar__status {
+    gap: 10px;
+    min-width: 0;
+  }
+
+  .topbar__moveno {
+    font-size: 13px;
+    letter-spacing: 0;
+    white-space: nowrap;
+  }
+
+  .turn {
+    gap: 7px;
+    font-size: 17px;
+    white-space: nowrap;
+  }
+
+  .turn__dot,
+  .turn[data-side='red'] .turn__dot {
+    width: 9px;
+    height: 9px;
+    box-shadow: 0 0 0 3px rgba(29, 26, 23, 0.14);
+  }
+
+  .turn[data-side='red'] .turn__dot {
+    box-shadow: 0 0 0 3px rgba(179, 48, 30, 0.18);
+  }
+
+  .topbar__tools {
+    gap: 2px;
+  }
+
+  .topbar__tool {
+    width: 44px;
+    justify-content: center;
+    padding: 0;
+    border: 0;
+  }
+
+  .topbar__tool .icon {
+    width: 20px;
+    height: 20px;
+  }
+
+  .music-toggle[aria-pressed='true'] {
+    color: var(--cinnabar);
+  }
+
+  .table {
+    gap: 10px;
+    padding: 2px 7px 0;
+  }
+
+  .board-frame {
+    border-radius: 5px;
+    box-shadow:
+      inset 0 1px 0 rgba(255, 220, 170, 0.35),
+      0 2px 0 #3F2410,
+      0 16px 30px rgba(60, 35, 15, 0.28);
+  }
+
+  .board__grid {
+    stroke-width: 1px;
+  }
+
+  .board__grid .board__frame-line {
+    stroke-width: 2px;
+  }
+
+  .board__river {
+    letter-spacing: 0.5em;
+  }
+
+  .board__piece {
+    --ring: 1.2px;
+    --d1: 1.5px;
+    --d2: 3px;
+    --d3: 5px;
+    --blur: 7px;
+  }
+
+  .mark--hint {
+    box-shadow: 0 0 0 3px rgba(250, 240, 215, 0.35);
+  }
+
+  .mark--cap {
+    border-width: 2px;
+    box-shadow: 0 0 0 3px rgba(179, 48, 30, 0.2);
+  }
+}

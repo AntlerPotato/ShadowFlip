@@ -1,0 +1,566 @@
+/* 影翻棋 · 弹窗与提示：轻提示、确认框、胜负结果、规则卷轴 */
+
+/* ===== 轻提示 ===== */
+.toasts {
+  position: fixed;
+  top: 24px;
+  left: 50%;
+  z-index: 100;
+  width: max-content;
+  max-width: calc(100vw - 32px);
+  transform: translateX(-50%);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 12px;
+  pointer-events: none;
+}
+
+.toast {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  padding: 12px 22px 12px 12px;
+  background: #FFFDF7;
+  border: 1px solid rgba(29, 26, 23, 0.15);
+  border-radius: 3px;
+  box-shadow: 0 12px 28px rgba(60, 40, 20, 0.22);
+  font-size: 17px;
+  line-height: 1.5;
+  animation: toast-in 0.24s ease-out;
+}
+
+.toast.is-leaving {
+  animation: toast-out 0.2s ease-in forwards;
+}
+
+.toast .seal {
+  width: 32px;
+  height: 32px;
+  font-size: 21px;
+}
+
+@keyframes toast-in {
+  from {
+    opacity: 0;
+    transform: translateY(-12px);
+  }
+}
+
+@keyframes toast-out {
+  to {
+    opacity: 0;
+    transform: translateY(-8px);
+  }
+}
+
+/* ===== 弹窗通用 ===== */
+.modal {
+  padding: 0;
+  border: 0;
+  background: transparent;
+  color: var(--ink);
+  max-width: none;
+  max-height: none;
+  overflow: visible;
+}
+
+.modal::backdrop {
+  background: rgba(24, 21, 18, 0.66);
+}
+
+.modal[open]::backdrop {
+  animation: fade-in 0.2s ease-out;
+}
+
+@keyframes fade-in {
+  from {
+    opacity: 0;
+  }
+}
+
+@keyframes card-in {
+  from {
+    opacity: 0;
+    transform: translateY(10px) scale(0.98);
+  }
+}
+
+.card {
+  background: var(--paper-card);
+  border: 1px solid rgba(29, 26, 23, 0.15);
+  border-radius: 4px;
+  box-shadow: 0 24px 50px rgba(0, 0, 0, 0.35);
+}
+
+/* ===== 确认框：认输、求和 ===== */
+.ask {
+  width: min(320px, calc(100vw - 32px));
+  padding: 28px 26px 24px;
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  animation: card-in 0.22s ease-out;
+}
+
+.ask__head {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.ask__head > .icon {
+  width: 26px;
+  height: 26px;
+  color: var(--cinnabar);
+}
+
+.ask__head > .seal {
+  width: 34px;
+  height: 34px;
+  font-size: 22px;
+}
+
+.ask__title {
+  margin: 0;
+  font-size: 24px;
+  font-weight: 700;
+}
+
+.ask__text {
+  margin: 0;
+  font-size: 16px;
+  line-height: 1.75;
+  color: var(--ink-2);
+}
+
+.ask__actions {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 10px;
+  margin-top: 10px;
+}
+
+.ask__actions .btn {
+  min-height: 46px;
+  padding: 0 10px;
+  box-shadow: none;
+}
+
+/* ===== 胜负结果 ===== */
+.result {
+  position: fixed;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  margin: 0;
+}
+
+.result[open] {
+  display: grid;
+  place-items: center;
+  overflow-y: auto;
+}
+
+.result__card {
+  position: relative;
+  width: min(420px, calc(100vw - 32px));
+  margin: 86px 0 24px;
+  padding: 96px 36px 34px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 14px;
+  text-align: center;
+  box-shadow: 0 30px 60px rgba(0, 0, 0, 0.35);
+  animation: card-in 0.3s ease-out;
+}
+
+.result__seal {
+  --frame: 7px;
+  position: absolute;
+  top: -62px;
+  left: 50%;
+  width: 132px;
+  height: 132px;
+  margin-left: -66px;
+  font-size: 50px;
+  border-radius: 8px 12px 10px 14px;
+  transform: rotate(-6deg);
+  box-shadow:
+    inset 0 0 0 7px var(--seal-bg),
+    inset 0 0 0 10px rgba(251, 240, 224, 0.85),
+    0 12px 26px rgba(80, 20, 10, 0.4);
+  animation: seal-stamp 0.42s cubic-bezier(0.2, 0.9, 0.3, 1.2) 0.1s both;
+}
+
+.result__seal.seal--ink {
+  border-radius: 10px 7px 12px 8px;
+  transform: rotate(5deg);
+  box-shadow:
+    inset 0 0 0 7px var(--seal-bg),
+    inset 0 0 0 10px rgba(244, 238, 225, 0.8),
+    0 12px 26px rgba(0, 0, 0, 0.4);
+}
+
+@keyframes seal-stamp {
+  from {
+    opacity: 0;
+    scale: 1.6;
+  }
+}
+
+.result__title {
+  margin: 0;
+  font-family: var(--font-brush);
+  font-weight: 400;
+  font-size: 54px;
+  line-height: 1.1;
+}
+
+.result__title.is-red {
+  color: var(--piece-red);
+}
+
+.result__text {
+  margin: 0;
+  font-size: 18px;
+  color: var(--ink-2);
+}
+
+.result__move {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  margin: 6px 0 4px;
+  font-size: 14px;
+  color: var(--ink-mute);
+}
+
+.result__move .pc {
+  width: 40px;
+  height: 40px;
+  font-size: 22px;
+}
+
+.result__move .pc + .icon + .pc {
+  opacity: 0.55;
+}
+
+.result__move .icon {
+  color: var(--ink-mute);
+  stroke-width: 1.8;
+}
+
+.result__move-label {
+  margin-left: 4px;
+}
+
+.result__actions {
+  width: 100%;
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 12px;
+  margin-top: 12px;
+}
+
+.result__actions .btn {
+  min-height: 50px;
+  padding: 0 10px;
+  font-size: 18px;
+  letter-spacing: 0.1em;
+}
+
+.result__actions .btn--primary {
+  letter-spacing: 0.16em;
+}
+
+/* 落梅：结果出现时飘落 */
+.petals {
+  position: fixed;
+  inset: 0;
+  overflow: hidden;
+  pointer-events: none;
+}
+
+.petal {
+  position: absolute;
+  top: -48px;
+  left: var(--x);
+  width: var(--size);
+  height: var(--size);
+  animation: petal-fall var(--dur) linear var(--delay) both;
+}
+
+.petal svg {
+  width: 100%;
+  height: 100%;
+  overflow: visible;
+}
+
+.petal--still {
+  top: var(--y);
+  transform: rotate(var(--spin));
+  animation: none;
+}
+
+@keyframes petal-fall {
+  0% {
+    opacity: 0;
+    transform: translate3d(0, 0, 0) rotate(0deg);
+  }
+  8% {
+    opacity: 1;
+  }
+  50% {
+    transform: translate3d(calc(var(--drift) * -0.6), 55vh, 0) rotate(calc(var(--spin) * 0.5));
+  }
+  100% {
+    opacity: 0.85;
+    transform: translate3d(var(--drift), 112vh, 0) rotate(var(--spin));
+  }
+}
+
+/* ===== 规则卷轴 ===== */
+.scroll[open] {
+  width: min(500px, calc(100vw - 48px));
+  height: min(700px, calc(100vh - 48px));
+  height: min(700px, calc(100dvh - 48px));
+  display: flex;
+  flex-direction: column;
+  animation: card-in 0.24s ease-out;
+}
+
+.scroll__rod {
+  position: relative;
+  z-index: 1;
+  flex: none;
+  height: 20px;
+  margin: 0 -16px;
+  border-radius: 10px;
+  background: linear-gradient(180deg, #8E5C2C, #5A3418 70%, #3F2410);
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.35);
+}
+
+.scroll__rod:last-child {
+  box-shadow: 0 6px 10px rgba(0, 0, 0, 0.35);
+}
+
+.scroll__paper {
+  flex: 1;
+  min-height: 0;
+  margin: -4px 0;
+  background: var(--paper-card);
+  display: flex;
+  flex-direction: column;
+  box-shadow: 0 24px 50px rgba(0, 0, 0, 0.35);
+}
+
+.scroll__head {
+  padding: 26px 30px 0;
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 16px;
+}
+
+.scroll__titles {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.scroll__kicker {
+  font-size: 13px;
+  letter-spacing: 0.4em;
+  color: var(--cinnabar);
+}
+
+.scroll__title {
+  margin: 0;
+  font-family: var(--font-brush);
+  font-weight: 400;
+  font-size: 42px;
+  line-height: 1.1;
+}
+
+.scroll__close {
+  border: 0;
+}
+
+.scroll__close .icon {
+  width: 22px;
+  height: 22px;
+}
+
+.tabs {
+  margin: 18px 30px 0;
+  display: flex;
+  gap: 4px;
+  overflow-x: auto;
+  border-bottom: 1px solid rgba(29, 26, 23, 0.15);
+  scrollbar-width: none;
+}
+
+.tab {
+  flex: none;
+  height: 44px;
+  padding: 0 16px;
+  border: 0;
+  border-bottom: 2.5px solid transparent;
+  background: transparent;
+  color: var(--ink-mute);
+  font-size: 16px;
+  cursor: pointer;
+}
+
+.tab:hover {
+  background: rgba(29, 26, 23, 0.06);
+}
+
+.tab[aria-selected='true'] {
+  border-bottom-color: var(--cinnabar);
+  color: var(--ink);
+  font-weight: 700;
+}
+
+.tab:focus-visible {
+  outline-offset: -3px;
+}
+
+.scroll__body {
+  position: relative;
+  flex: 1;
+  min-height: 0;
+}
+
+.scroll__body::after {
+  content: '';
+  position: absolute;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  height: 48px;
+  background: linear-gradient(180deg, rgba(251, 247, 238, 0), var(--paper-card));
+  pointer-events: none;
+}
+
+.tabpanel {
+  height: 100%;
+  overflow-y: auto;
+  padding: 8px 30px 40px;
+  overscroll-behavior: contain;
+}
+
+.tabpanel:focus-visible {
+  outline-offset: -3px;
+}
+
+.rule-list {
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.rule-row {
+  display: flex;
+  gap: 16px;
+  padding: 14px 0;
+  border-bottom: 1px dashed rgba(29, 26, 23, 0.18);
+}
+
+.rule-row__mark {
+  flex: none;
+  width: 56px;
+  display: flex;
+  padding-top: 2px;
+}
+
+.rule-row__mark .pc {
+  width: 32px;
+  height: 32px;
+  font-size: 17px;
+}
+
+.rule-row__mark .pc-lq {
+  font-size: 15px;
+}
+
+.rule-row__mark .pc:first-child {
+  z-index: 1;
+}
+
+.rule-row__mark .pc + .pc {
+  margin-left: -8px;
+}
+
+/* 悔棋、胜负条目用的序号 */
+.rule-row__num {
+  width: 32px;
+  height: 32px;
+  border: 1.5px solid var(--cinnabar);
+  border-radius: 3px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-family: var(--font-brush);
+  font-size: 20px;
+  color: var(--cinnabar);
+}
+
+.rule-row__body {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.rule-row__title {
+  margin: 0;
+  font-size: 17px;
+  font-weight: 700;
+}
+
+.rule-row__text {
+  margin: 0;
+  font-size: 15px;
+  line-height: 1.7;
+  color: var(--ink-2);
+}
+
+@media (max-width: 480px) {
+  .toast {
+    font-size: 15px;
+  }
+
+  .result__card {
+    padding: 90px 22px 26px;
+  }
+
+  .result__title {
+    font-size: 46px;
+  }
+
+  .scroll[open] {
+    width: calc(100vw - 32px);
+  }
+
+  .scroll__rod {
+    margin: 0 -8px;
+  }
+
+  .scroll__head {
+    padding: 22px 20px 0;
+  }
+
+  .tabs {
+    margin: 14px 20px 0;
+  }
+
+  .tab {
+    padding: 0 12px;
+  }
+
+  .tabpanel {
+    padding: 4px 20px 36px;
+  }
+}
